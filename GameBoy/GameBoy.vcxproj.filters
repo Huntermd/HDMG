@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GameBoy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cartridge.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MBC3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NMBC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MBC1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MBC2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jsonTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PPU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GameBoy.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cartridge.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MBC3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NMBC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MBC1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MBC2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jsonTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PPU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Pokemon-red.gb" />
+    <None Include="Tetris.gb" />
+    <None Include="Mega-Man-III.gb" />
+    <None Include="06-ld r,r.gb" />
+    <None Include="01-special.gb" />
+    <None Include="cpu_instrs.gb" />
+    <None Include="03-op sp,hl.gb" />
+    <None Include="04-op r,imm.gb" />
+    <None Include="05-op rp.gb" />
+    <None Include="07-jr,jp,call,ret,rst.gb" />
+    <None Include="08-misc instrs.gb" />
+    <None Include="09-op r,r.gb" />
+    <None Include="11-op a,(hl).gb" />
+    <None Include="10-bit ops.gb" />
+    <None Include="02-interrupts.gb" />
+    <None Include="dmg-acid2.gb">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="instr_timing.gb" />
+    <None Include="mem_timing.gb" />
+    <None Include="interrupt_time.gb" />
+    <None Include="basic.gb" />
+    <None Include="reg_read.gb" />
+    <None Include="oam_bug.gb" />
+    <None Include="1-lcd_sync.gb" />
+    <None Include="lcdon_timing-GS.gb" />
+    <None Include="intr_2_mode3_timing.gb" />
+    <None Include="dmg_boot.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="4-scanline_timing.gb" />
+    <None Include="intr_timing.gb" />
+    <None Include="hblank_ly_scx_timing-GS.gb" />
+    <None Include=".gitignore" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="myLogs.txt" />
+    <Text Include="EpicLog.txt" />
+    <Text Include="Blargg4.txt" />
+    <Text Include="Blargg5.txt" />
+    <Text Include="Blargg9.txt" />
+    <Text Include="Logs.txt" />
+  </ItemGroup>
+</Project>
