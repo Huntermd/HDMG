@@ -21,8 +21,7 @@ public:
 	void initLogging();
 	void closeTxt();
 	
-	//Json Testing
-	void loadValues(int a, int b,int c, int d, int e, int f, int h, int l,int sp, int pc);
+	
 	
 private:
 	
@@ -30,8 +29,8 @@ private:
 	void logData();
 	
 	int opCount = 0;
-	void includesOps();
-	std::vector<uint8_t> uniqueOps;
+	
+	
 	void getOpcode();
 	bool testEnable = false;
 	std::vector<std::vector<uint16_t>> testRam = {

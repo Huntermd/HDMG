@@ -5,7 +5,7 @@ std::ofstream outputFile;
 int lineCount = 0;
 bool eiDelay = false;
 GameBoy::GameBoy(){
-	//init();
+	
 	if (!testEnable) {
 		cpuInit();
 	}
@@ -78,7 +78,7 @@ void GameBoy::testRom(){
 			ime = 1;
 			eiDelay = false;
 		}
-		//logData();
+		
 
 
 		getOpcode();
@@ -88,7 +88,7 @@ void GameBoy::testRom(){
 	
 
 	
-	//includesOps();
+	
 	InstructionSet();
 	handleInterruptions();
 	
@@ -111,8 +111,7 @@ void GameBoy::closeTxt(){
 	outputFile.close();
 }
 
-void GameBoy::loadValues(int a, int b, int c, int d, int e, int f, int h, int l, int sp, int pc){
-}
+
 
 void GameBoy::logData(){
 	uint8_t temp1 = cpuRead(programCounter);
@@ -152,18 +151,7 @@ void GameBoy::initLogging(){
 	}
 }
 
-void GameBoy::includesOps(){
-	for (size_t i = 0; i < opCount; i++){
-		if (uniqueOps[i] == Opcode) {
-			std::cout << "Duplicate: " << std::hex<<static_cast<int>(Opcode) << "\n";
-			return;
-		}
 
-	}
-	std::cout << "Unique: " << std::hex<<static_cast<int>(Opcode) << "\n";
-	uniqueOps.emplace_back(Opcode);
-	opCount++;
-}
 
 void GameBoy::getOpcode(){
 	Opcode = cpuRead(programCounter);
@@ -392,11 +380,7 @@ void GameBoy::cpuInit(){
 	
 	iF = 0xE1;
 	ie = 0;
-	//cpuWrite(0xFF02, 0x7E);
-	//cpuWrite(0xFF00, 0xCF);
-	//mCycle();
-	//Uncomment the CpuWrite for Tetris and comment for dmg-acid2
-	//cpuWrite(0xFF07, 0xF8);
+	
 }
 
 void GameBoy::InstructionSet() {
