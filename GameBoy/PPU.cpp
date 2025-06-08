@@ -26,24 +26,32 @@ void PPU::handleScanline(uint8_t& ie) {
 	int mode = getMode();
 
 	if (mode == 1) {
+		//frameDotCounter++;
 		if (LY == 153) {
 			//updateDisplay(frameBuffer);
-			STAT = (STAT & 0xFC) | 0x02;
-			ppuCounter = 0;
-			LY = 0;
-			windowLineCounter = 0;
-			currentFrame++;
-			return;
+			if (ppuCounter == 456) {
+				STAT = (STAT & 0xFC) | 0x02;
+				ppuCounter = 0;
+				LY = 0;
+				uint16_t time = frameDotCounter;
+				windowLineCounter = 0;
+				currentFrame++;
+				frameDotCounter = 0;
+				return;
+			}
 		}
 		if (LY < 153) {
-			LY++;
-			//if (ifWindow) windowLineCounter++;
-			if (LYC == LY) {
-				STAT |= 0x04;
-				ie |= 0x02;
-			}
-			else {
-				STAT &= ~0x04;
+			if (ppuCounter == 456) {
+				LY++;
+				//if (ifWindow) windowLineCounter++;
+				if (LYC == LY) {
+					STAT |= 0x04;
+					ie |= 0x02;
+				}
+				else {
+					STAT &= ~0x04;
+				}
+				ppuCounter = 0;
 			}
 
 
@@ -59,7 +67,7 @@ void PPU::handleScanline(uint8_t& ie) {
 
 		oamScan();
 
-		if (ppuCounter == (79)) {
+		if (ppuCounter == (80)) {
 
 			std::stable_sort(slOamBuffer.begin(), slOamBuffer.end(), [](const gbObject& a, const gbObject& b) {
 				return a.x < b.x;
@@ -82,11 +90,6 @@ void PPU::handleScanline(uint8_t& ie) {
 
 		//Handle drawing
 		handleDraw();
-		if (fetcherX != 160 && ppuCounter == 289) {
-			if (currentFrame > 0) {
-				int hyeo = currentFrame;
-			}
-		}
 
 		if (LCDX == 160) {
 			fetcherX = 0;
@@ -104,8 +107,10 @@ void PPU::handleScanline(uint8_t& ie) {
 	}
 	if (mode == 0) {
 		//handle h-blank
-		if (ppuCounter >= (456)) {
-
+		if (ppuCounter == (456)) {
+			//frameDotCounter += ppuCounter;
+			
+			
 			ppuCounter = 0;
 			LY++;
 
@@ -131,6 +136,7 @@ void PPU::handleScanline(uint8_t& ie) {
 				spriteCount = 0;
 				oBufferPos = 0;
 				oamIndex = 0;
+				uint16_t time = frameDotCounter;
 
 
 			}
@@ -725,17 +731,23 @@ void PPU::reset(){
 
 void PPU::updatePPU(uint8_t& ie) {
 	if (lcdOff)return;
-	if (lcdJustTurnON) {
-		LcdEnableCounter++;
-		if (LcdEnableCounter == 76) {
-			lcdJustTurnON = false;
-			STAT = (STAT & 0xFC) | 0x03;
-			return;
+	for (size_t i = 0; i < 4; i++)
+	{
+		ppuCounter++;
+		if (lcdJustTurnON) {
+			LcdEnableCounter++;
+			if (LcdEnableCounter == 76) {
+				lcdJustTurnON = false;
+				STAT = (STAT & 0xFC) | 0x03;
+				continue;
+			}
+			continue;
 		}
-		return;
+		
+		//frameDotCounter++;
+		handleScanline(ie);
+
 	}
-	ppuCounter++;
-	handleScanline(ie);
 
 
 

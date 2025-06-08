@@ -93,7 +93,7 @@ public:
 	uint8_t LYC = 0;
 	uint8_t colorId = 0xFC;
 	uint16_t ppuCounter = 0;
-	uint16_t frameDotCounter = 0;
+	uint32_t frameDotCounter = 0;
 	uint8_t obj0 = 0x00;
 	uint8_t obj1 = 0x00;
 	uint8_t joypad = 0xCF;
