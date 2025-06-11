@@ -68,7 +68,10 @@ void GameBoy::testInstuctions(){
 }
 
 void GameBoy::testRom(){
-	
+	if (dmaActive) {
+		mCycle();
+		return;
+	}
 	if (ifHalt) {
 		mCycle();
 		
@@ -97,6 +100,7 @@ void GameBoy::testRom(){
 void GameBoy::loadComponets(Mapper* m, PPU* p){
 	this->map = m;
 	this->ppu = p;
+	ppu->loadRun(&isRunning);
 
 
 }
@@ -163,7 +167,7 @@ void GameBoy::getOpcode(){
 
 uint8_t GameBoy::cpuRead(uint16_t address){
 	mCycle();
-
+	if (dmaActive)return byte;
 	if (testEnable) {
 		for (int i = 0; i < testRam.size(); i++) {
 			if (address == testRam[i][0]) {
@@ -231,6 +235,7 @@ uint8_t GameBoy::cpuRead(uint16_t address){
 
 void GameBoy::cpuWrite(uint16_t address, uint8_t data){
 	mCycle();
+	if (dmaActive)return;
 	if (testEnable) {
 		bool includes = false;
 		int index = 0;
@@ -3536,7 +3541,7 @@ void GameBoy::retCC(bool cc) {
 		uint8_t upperBit = cpuRead(stackPointer++);
 		programCounter = (upperBit << 8) | lowerBit;
 		mCycle();
-		mCycle();
+		//mCycle();
 		tCycle(20);
 	}
 	else {
@@ -3919,7 +3924,7 @@ void GameBoy::detectEdge(uint8_t before, uint8_t after){
 }
 
 void GameBoy::mCycle(){
-	ppu->checkEvents(isRunning, iF);
+	//ppu->checkEvents(isRunning, iF);
 	dma();
 	incState();
 	ppu->updatePPU(iF);

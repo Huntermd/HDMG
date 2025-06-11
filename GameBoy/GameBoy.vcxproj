@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bus.cpp" />
     <ClCompile Include="Cartridge.cpp" />
     <ClCompile Include="GameBoy.cpp" />
     <ClCompile Include="jsonTest.cpp" />
@@ -139,6 +140,7 @@
     <ClCompile Include="PPU.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bus.h" />
     <ClInclude Include="Cartridge.h" />
     <ClInclude Include="GameBoy.h" />
     <ClInclude Include="jsonTest.h" />
