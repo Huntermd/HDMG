@@ -28,15 +28,19 @@ void PPU::handleScanline(uint8_t& ie) {
 	if (mode == 1) {
 		//frameDotCounter++;
 		if (LY == 153) {
-			//updateDisplay(frameBuffer);
+			
 			if (ppuCounter == 456) {
+				updateDisplay(frameBuffer);
 				STAT = (STAT & 0xFC) | 0x02;
 				ppuCounter = 0;
 				LY = 0;
 				uint16_t time = frameDotCounter;
 				windowLineCounter = 0;
+				
 				currentFrame++;
+				
 				frameDotCounter = 0;
+				checkEvents(*run, ie);
 				return;
 			}
 		}
@@ -99,7 +103,7 @@ void PPU::handleScanline(uint8_t& ie) {
 			spriteFifo.clear();
 			fifo.empty();
 			already.clear();
-			delayCycle = 1;
+			
 
 
 		}
@@ -107,15 +111,15 @@ void PPU::handleScanline(uint8_t& ie) {
 	}
 	if (mode == 0) {
 		//handle h-blank
-		if (ppuCounter == (456)) {
+		if (ppuCounter == (456-shorten)) {
 			//frameDotCounter += ppuCounter;
-			
+			if (shorten > 0)shorten = 0;
 			
 			ppuCounter = 0;
 			LY++;
 
 			if (ifWindow) windowLineCounter++;
-			updateDisplay(frameBuffer);
+			//updateDisplay(frameBuffer);
 			if (LYC == LY) {
 				STAT |= 0x04;
 				if (STAT & 0x40) {
@@ -538,7 +542,7 @@ void PPU::pushLCD() {
 
 
 		Pixel pixel = fifo.popPixel();
-		frameBuffer[LY * 160 + LCDX] = pixel.color;
+		frameBuffer[LY * 160 + LCDX] = gbPalette[pixel.color];
 		LCDX++;
 	}
 
@@ -607,7 +611,7 @@ void PPU::checkEvents(bool& isRunning, uint8_t ie) {
 
 			}
 			if (e.key.keysym.sym == SDLK_RIGHT) {
-				joypad = (joypad & 0xEE) | 0x20;
+				joypad = (joypad & 0xEE) | 0x20; 
 				
 
 			}
@@ -726,19 +730,26 @@ void PPU::reset(){
 	stepCounterP = 0;
 }
 
+void PPU::setFps(){
+	fpsTimer= SDL_GetTicks();
+}
+
 
 
 
 void PPU::updatePPU(uint8_t& ie) {
 	if (lcdOff)return;
+	
+	//if (delayCycle > 0){delayCycle--; return;
 	for (size_t i = 0; i < 4; i++)
 	{
 		ppuCounter++;
 		if (lcdJustTurnON) {
 			LcdEnableCounter++;
-			if (LcdEnableCounter == 76) {
+			if (LcdEnableCounter == 80) {
 				lcdJustTurnON = false;
 				STAT = (STAT & 0xFC) | 0x03;
+				shorten = 4;
 				continue;
 			}
 			continue;
@@ -751,6 +762,14 @@ void PPU::updatePPU(uint8_t& ie) {
 
 
 
+}
+
+PPU::PPU(){
+	ppuInit();
+}
+
+void PPU::loadRun(bool* r){
+	this->run = r;
 }
 
 void PPU::mix() {
@@ -840,6 +859,7 @@ void PPU::ppuWrite(uint16_t address, uint8_t data, uint8_t& ie) {
 			lcdOff = false;
 			LcdEnableCounter = 0;
 			STAT = (STAT & 0xFC) | 0x00;
+			delayCycle = 2;
 		}
 		if (wasOn && !nowOn) {
 			lcdOff = true;
@@ -948,13 +968,9 @@ void PPU::ppuInit() {
 
 }
 
-void updateDisplay(uint8_t* frameBuffer) {
-	for (int i = 0; i < 23040; i++) {
-		uint8_t color = frameBuffer[i];
-		pixels[i] = gbPalette[color];
-
-	}
-	SDL_UpdateTexture(sdlTexture, NULL, pixels, 160 * sizeof(Uint32));
+void updateDisplay(uint32_t* frameBuffer) {
+	
+	SDL_UpdateTexture(sdlTexture, NULL, frameBuffer, 160 * sizeof(Uint32));
 
 	SDL_RenderClear(render); // clears screen?? or maybe just the renderer
 	SDL_RenderCopy(render, sdlTexture, NULL, NULL);

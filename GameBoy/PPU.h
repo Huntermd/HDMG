@@ -4,6 +4,7 @@
 #include "vector"
 
 
+
 const uint32_t gbPalette[4] = {
 	0xFFFFFFFF,
 	0xAAAAAAFF,
@@ -72,14 +73,16 @@ typedef struct mainFIFO {
 
 class PPU {
 public:
-	PPU(){};
+	PPU();
 	~PPU() {
 	};
+	void loadRun(bool* r);
+	bool* run;
 	int dotAmount = 3;
 	std::vector<int> already;
 	bool objectOn = false;
 	uint8_t vRam[8192];
-	uint8_t frameBuffer[160 * 144];
+	uint32_t frameBuffer[160 * 144];
 	uint8_t STAT = 0x84;
 	uint8_t LY =0;
 	uint8_t LCDC = 0x91;
@@ -168,7 +171,7 @@ public:
 	std::vector<int> usedSprites;
 	uint8_t dma = 0xFF;
 	bool dmaActive = false;
-	int delayCycle = 0;
+	int delayCycle = 3;
 	int bgX = 0;
 	bool bgFetchEnable = true;
 	uint8_t prevTile = 0xFF;
@@ -181,9 +184,12 @@ public:
 	bool modeChange = false;
 	int changeMode = 0;
 	int cycleOffset = 1;
+	void setFps();
+	int currentFPS = 0;
+	Uint32 fpsTimer;
 };
 
-void updateDisplay(uint8_t * frameBuffer);
+void updateDisplay(uint32_t * frameBuffer);
 //FF44 LY LCD Y coordinate (read only)]
 
 //FF45 LYC: compare
