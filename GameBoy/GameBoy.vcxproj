@@ -179,8 +179,10 @@
     <None Include="Mega-Man-III.gb" />
     <None Include="mem_timing.gb" />
     <None Include="oam_bug.gb" />
+    <None Include="oam_dma_start.gb" />
     <None Include="Pokemon-red.gb" />
     <None Include="reg_read.gb" />
+    <None Include="sources-GS.gb" />
     <None Include="Tetris.gb" />
   </ItemGroup>
   <ItemGroup>

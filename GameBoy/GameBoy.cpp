@@ -68,10 +68,7 @@ void GameBoy::testInstuctions(){
 }
 
 void GameBoy::testRom(){
-	if (dmaActive) {
-		mCycle();
-		return;
-	}
+	
 	if (ifHalt) {
 		mCycle();
 		
@@ -101,6 +98,7 @@ void GameBoy::loadComponets(Mapper* m, PPU* p){
 	this->map = m;
 	this->ppu = p;
 	ppu->loadRun(&isRunning);
+	ppu->loadDMA(&dmaActive);
 
 
 }
@@ -167,7 +165,18 @@ void GameBoy::getOpcode(){
 
 uint8_t GameBoy::cpuRead(uint16_t address){
 	mCycle();
-	if (dmaActive)return byte;
+	//if (dmaActive)return byte;
+	if (dmaActive) {
+		if ((address >= 0xFE00 && address <= 0xFE9F) || (address >= 0xFF80 && address <= 0xFFFE)) {
+			if (address >= 0xFE00 && address <= 0xFE9F) {
+				return ppu->readOAM(address);
+			}
+			uint8_t data = hram[address - 0xFF80];
+
+			return data;
+		}
+		return byte;
+	}
 	if (testEnable) {
 		for (int i = 0; i < testRam.size(); i++) {
 			if (address == testRam[i][0]) {
@@ -3969,6 +3978,7 @@ void GameBoy::dma()
 			dmaIndex++;
 			if (dmaIndex == 160) {
 				dmaActive = false;
+				ppu->incDelay();
 			}
 		}
 		

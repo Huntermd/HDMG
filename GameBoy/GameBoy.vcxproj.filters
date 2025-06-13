@@ -116,6 +116,8 @@
     <None Include="intr_timing.gb" />
     <None Include="hblank_ly_scx_timing-GS.gb" />
     <None Include=".gitignore" />
+    <None Include="oam_dma_start.gb" />
+    <None Include="sources-GS.gb" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="myLogs.txt" />
