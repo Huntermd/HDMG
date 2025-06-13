@@ -78,6 +78,9 @@ public:
 	};
 	void loadRun(bool* r);
 	bool* run;
+	
+	void loadDMA(bool* d);
+	bool* dmaActive;
 	int dotAmount = 3;
 	std::vector<int> already;
 	bool objectOn = false;
@@ -130,6 +133,8 @@ public:
 	bool lcdOff = false;
 	void mix();
 	FIFO fifo;
+	int delayOAM = 0;
+	void incDelay();
 	pixelFifo bgFifo;
 	pixelFifo spriteFifo;
 	pixelFifo bgBuffer;
@@ -170,7 +175,7 @@ public:
 	uint16_t returnColors(Pixel pixel);
 	std::vector<int> usedSprites;
 	uint8_t dma = 0xFF;
-	bool dmaActive = false;
+	
 	int delayCycle = 3;
 	int bgX = 0;
 	bool bgFetchEnable = true;

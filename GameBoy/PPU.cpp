@@ -772,6 +772,10 @@ void PPU::loadRun(bool* r){
 	this->run = r;
 }
 
+void PPU::loadDMA(bool* d){
+	this->dmaActive = d;
+}
+
 void PPU::mix() {
 
 	Pixel sp = spriteFifo.popPixel();
@@ -785,6 +789,10 @@ void PPU::mix() {
 		fifo.pushPixel(sp);
 	}
 
+}
+
+void PPU::incDelay(){
+	delayOAM = 0;
 }
 
 uint8_t PPU::ppuRead(uint16_t address)
@@ -898,6 +906,10 @@ void PPU::ppuWrite(uint16_t address, uint8_t data, uint8_t& ie) {
 
 		return;
 	}
+	case 0xFF46: {
+		dma = data;
+		return;
+	}
 	case 0xFF47: {
 		colorId = data;
 		return;
@@ -923,7 +935,13 @@ void PPU::ppuWrite(uint16_t address, uint8_t data, uint8_t& ie) {
 }
 
 uint8_t PPU::readOAM(uint16_t address) {
-
+	int mode = getMode();
+	if (mode == 2 || mode == 3)return 0xFF;
+	if (*dmaActive)return 0xFF;
+	if (delayOAM > 0) {
+		delayOAM--;
+		return 0xFF;
+	}
 	return OAM[address - 0xFE00];
 }
 
