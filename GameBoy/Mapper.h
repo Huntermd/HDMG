@@ -5,9 +5,11 @@
 
 class Mapper {
 public:
+	bool* halt;
 	 ~Mapper();
 	 Mapper();
 	void write(uint16_t address, uint8_t data);
+	void loadHalt(bool* h);
 
 	uint8_t read(uint16_t address);
 	void updateVariables(bool IframUsed, bool IfbatteryUsed);
@@ -42,7 +44,7 @@ private:
 	void incrementDay();
 	void updateTime();
 	int dayCounter = 0;
-	bool halt = false;
+	
 	bool carryFlag = false;
 	bool ifLatched = false;
 	bool ifRTCchoosen;

@@ -34,6 +34,10 @@ void Mapper::write(uint16_t address, uint8_t data){
 	
 }
 
+void Mapper::loadHalt(bool* h){
+	this->halt = h;
+}
+
 uint8_t Mapper::read(uint16_t address){
 	if (isBootRom && address < 0x0100)return bootrom[address];
 	 switch (mbcType)
@@ -88,7 +92,7 @@ void Mapper::initTime(){
 }
 
 void Mapper::incrementDay(){
-	//if (halt) return;
+	if (*halt) return;
 
 	dayCounter++;
 	if (dayCounter > 511) {
@@ -101,7 +105,7 @@ void Mapper::incrementDay(){
 }
 
 void Mapper::updateTime(){
-	if (halt) {
+	if (*halt) {
 		return;
 	}
 	if (!ifLatched) {

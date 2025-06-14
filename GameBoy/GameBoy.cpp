@@ -99,6 +99,7 @@ void GameBoy::loadComponets(Mapper* m, PPU* p){
 	this->ppu = p;
 	ppu->loadRun(&isRunning);
 	ppu->loadDMA(&dmaActive);
+	map->loadHalt(&ifHalt);
 
 
 }
