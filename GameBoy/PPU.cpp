@@ -590,46 +590,7 @@ void PPU::checkEvents(bool& isRunning, uint8_t ie) {
 		}
 
 		if (e.type == SDL_KEYDOWN) {
-			if (e.key.keysym.sym == SDLK_a) {
-				joypad = (joypad & 0xDE) | 0x10;
-				
-
-			}
-			if (e.key.keysym.sym == SDLK_b) {
-				joypad = (joypad & 0xDD) | 0x10;
-				
-
-			}
-			if (e.key.keysym.sym == SDLK_s) {
-				joypad = (joypad & 0xDB) | 0x10;
-				
-
-			}
-			if (e.key.keysym.sym == SDLK_d) {
-				joypad = (joypad & 0xD7) | 0x10;
-				
-
-			}
-			if (e.key.keysym.sym == SDLK_RIGHT) {
-				joypad = (joypad & 0xEE) | 0x20; 
-				
-
-			}
-			if (e.key.keysym.sym == SDLK_LEFT) {
-				joypad = (joypad & 0xED) | 0x20;
-				
-
-			}
-			if (e.key.keysym.sym == SDLK_UP) {
-				joypad = (joypad & 0xEB) | 0x20;
-				
-
-			}
-			if (e.key.keysym.sym == SDLK_DOWN) {
-				joypad = (joypad & 0xE7) | 0x20;
-				
-
-			}
+			keyDown(e);
 			if (e.key.keysym.sym == SDLK_ESCAPE) {
 				freeSdl();
 				SDL_Quit();
@@ -638,44 +599,8 @@ void PPU::checkEvents(bool& isRunning, uint8_t ie) {
 			}
 		}
 		if (e.type == SDL_KEYUP) {
-			if (e.key.keysym.sym == SDLK_a) {
-				joypad = joypad | 0x3F;
-
-
-			}
-			if (e.key.keysym.sym == SDLK_b) {
-				joypad = joypad | 0x3F;
-
-
-			}
-			if (e.key.keysym.sym == SDLK_s) {
-				joypad = joypad | 0x3F;
-
-
-			}
-			if (e.key.keysym.sym == SDLK_d) {
-				joypad = joypad | 0x3F;
-
-
-			}
-			if (e.key.keysym.sym == SDLK_RIGHT) {
-				joypad = joypad | 0x3F;
-
-
-			}
-			if (e.key.keysym.sym == SDLK_LEFT) {
-				joypad = joypad | 0x3F;
-
-
-			}
-			if (e.key.keysym.sym == SDLK_UP) {
-				joypad = joypad | 0x3F;
-
-
-			}
-			if (e.key.keysym.sym == SDLK_DOWN) {
-				joypad = joypad | 0x3F;
-			}
+			keyUp(e);
+			
 		}
 	}
 }
@@ -772,6 +697,90 @@ void PPU::loadRun(bool* r){
 	this->run = r;
 }
 
+void PPU::keyUp(SDL_Event& e){
+	switch (e.key.keysym.sym) {
+	case SDLK_a: {
+		joypadState |= (1 << 0);
+		break;
+
+	}
+	case SDLK_b: {
+		joypadState |= (1 << 1);
+		break;
+
+	}
+	case SDLK_s: {
+		joypadState |= (1 << 3);
+		break;
+	}
+	case SDLK_d: {
+		joypadState |= (1 << 2);
+		break;
+	}
+	case SDLK_RIGHT: {
+		joypadState |= (1 << 4);
+		break;
+	}
+	case SDLK_LEFT: {
+		joypadState |= (1 << 5);
+		break;
+	}
+	case SDLK_UP: {
+		joypadState |= (1 << 6);
+		break;
+
+	}
+	case SDLK_DOWN: {
+		joypadState |= (1 << 7);
+		break;
+
+	}
+	}
+	
+}
+
+void PPU::keyDown(SDL_Event& e){
+	switch (e.key.keysym.sym) {
+	case SDLK_a: {
+		joypadState &= ~(1 << 0);
+		break;
+
+	}
+	case SDLK_b: {
+		joypadState &= ~(1 << 1);
+		break;
+
+	}
+	case SDLK_s: {
+		joypadState &= ~(1 << 3);
+		break;
+	}
+	case SDLK_d: {
+		joypadState &= ~(1 << 2);
+		break;
+	}
+	case SDLK_RIGHT: {
+		joypadState &= ~(1 << 4);
+		break;
+	}
+	case SDLK_LEFT: {
+		joypadState &= ~(1 << 5);
+		break;
+	}
+	case SDLK_UP: {
+		joypadState &= ~(1 << 6);
+		break;
+
+	}
+	case SDLK_DOWN: {
+		joypadState &= ~(1 << 7);
+		break;
+
+	}
+	}
+
+}
+
 void PPU::loadDMA(bool* d){
 	this->dmaActive = d;
 }
@@ -799,7 +808,15 @@ uint8_t PPU::ppuRead(uint16_t address)
 {
 	switch (address) {
 	case 0xFF00: {
-		return joypad;
+		uint8_t result = 0xCF;
+		if (!(joypadSelect & 0x10)) {
+			result &= ((joypadState >> 4) | 0xF0);
+		}
+		if (!(joypadSelect & 0x20)) {
+			result &= ((joypadState &0x0F) | 0xF0);
+		}
+		result = (result & 0x0F) | joypadSelect;
+		return result;
 	}
 	case 0xFF40: {
 		return LCDC;
@@ -846,7 +863,8 @@ void PPU::ppuWrite(uint16_t address, uint8_t data, uint8_t& ie) {
 
 	switch (address) {
 	case 0xFF00: {
-		joypad = (joypad & 0x0F) | (data & 0xF0);
+		joypadSelect = data & 0x30;
+
 		break;
 	}
 	case 0xFF40: {

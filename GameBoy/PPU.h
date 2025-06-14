@@ -4,7 +4,10 @@
 #include "vector"
 
 
-
+typedef struct joypad_T {
+	uint8_t actionSelect=0;
+	uint8_t directionSelect=0;
+}JOYP;
 const uint32_t gbPalette[4] = {
 	0xFFFFFFFF,
 	0xAAAAAAFF,
@@ -76,9 +79,13 @@ public:
 	PPU();
 	~PPU() {
 	};
+	uint8_t joypadState = 0xFF;
+	uint8_t joypadSelect = 0x30;
 	void loadRun(bool* r);
 	bool* run;
-	
+	JOYP jp;
+	void keyUp(SDL_Event& e);
+	void keyDown(SDL_Event& e);
 	void loadDMA(bool* d);
 	bool* dmaActive;
 	int dotAmount = 3;
