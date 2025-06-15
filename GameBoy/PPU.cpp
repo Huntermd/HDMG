@@ -38,7 +38,9 @@ void PPU::handleScanline(uint8_t& ie) {
 				windowLineCounter = 0;
 				
 				currentFrame++;
-				
+				if (SDL_GetTicks() - fpsTimer >= 1000) {
+					int current = currentFrame;
+				}
 				frameDotCounter = 0;
 				checkEvents(*run, ie);
 				return;
@@ -103,7 +105,7 @@ void PPU::handleScanline(uint8_t& ie) {
 			spriteFifo.clear();
 			fifo.empty();
 			already.clear();
-			
+			pos = 0;
 
 
 		}
@@ -486,7 +488,7 @@ bool PPU::checkSprites() {
 	uint8_t spriteHeight = (LCDC & 0x04) ? 16 : 8;
 	int bestSpriteIndex = -1;
 	uint8_t bestSpriteX = 255;
-	for (int i = 0; i < slOamBuffer.size(); i++) {
+	for (int i = pos; i < slOamBuffer.size(); i++) {
 		uint8_t spriteY = slOamBuffer[i].y;
 		uint8_t spriteX = slOamBuffer[i].x;
 
@@ -510,6 +512,7 @@ bool PPU::checkSprites() {
 
 			already.emplace_back(i);
 			spriteIndex = i;
+			pos = i;
 			return true;
 			//output << "Current frame: " << currentFrame << " Y: " << static_cast<int>(spriteY) << " X: " << static_cast<int>(spriteX) << " Tileindex: " << static_cast<int>(tileIndex) << " att: " << static_cast<int>(att) << " Ly: " << static_cast<int>(LY) << std::endl;
 

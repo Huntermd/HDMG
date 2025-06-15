@@ -199,6 +199,7 @@ public:
 	void setFps();
 	int currentFPS = 0;
 	Uint32 fpsTimer;
+	int pos = 0;
 };
 
 void updateDisplay(uint32_t * frameBuffer);
