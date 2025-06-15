@@ -33,24 +33,24 @@ typedef struct pixel_T {
 	uint8_t color = 0x00;
 	uint8_t palette = 0x00;
 	uint8_t priority = 0x00;
-	void loadColor(uint8_t colorId);
-	bool compare(pixel_T pixel);
-	void loadPriority(uint8_t Priority);
-	void loadPalette(uint8_t Palette);
-	void applyPalette();
+	inline void loadColor(uint8_t colorId);
+	inline bool compare(pixel_T pixel);
+	inline void loadPriority(uint8_t Priority);
+	inline void loadPalette(uint8_t Palette);
+	inline void applyPalette();
 	
 }Pixel;
 typedef struct pFIFO {
 	Pixel fifo[8];
-	Pixel popPixel();
+	inline Pixel popPixel();
 	int pixelCount = 0;
-	void pushPixel(Pixel pixel);
-	int size();
-	void clear();
+	inline void pushPixel(Pixel pixel);
+	inline int size();
+	inline void clear();
 	void Override(Pixel pixel);
 	void loadTransparentPixels();
 	void handlePixelLoad(Pixel pixel, int index);
-	uint8_t peek(int index);
+	inline uint8_t peek(int index);
 	void mixing(Pixel pixel);
 
 }pixelFifo;
@@ -61,16 +61,16 @@ typedef struct gbObject_t {
 	uint8_t tileIndex;
 	uint8_t att;
 	int oamIndex;
-	void load(uint8_t Y, uint8_t X, uint8_t tileI, uint8_t ATT,int oam);
+	inline void load(uint8_t Y, uint8_t X, uint8_t tileI, uint8_t ATT,int oam);
 } gbObject;
 typedef struct mainFIFO {
 	Pixel fifo[8];
-	Pixel popPixel();
+	inline Pixel popPixel();
 	int pixelCount = 0;
-	void pushPixel(Pixel pixel);
-	bool isEmpty();
-	void empty();
-	uint8_t peek();
+	inline void pushPixel(Pixel pixel);
+	inline bool isEmpty();
+	inline void empty();
+	inline uint8_t peek();
 
 }FIFO;
 
@@ -81,7 +81,7 @@ public:
 	};
 	uint8_t joypadState = 0xFF;
 	uint8_t joypadSelect = 0x30;
-	void loadRun(bool* r);
+	 void loadRun(bool* r);
 	bool* run;
 	JOYP jp;
 	void keyUp(SDL_Event& e);
@@ -138,7 +138,7 @@ public:
 	bool isWindow = false;
 	bool spriteFecthActive = false;
 	bool lcdOff = false;
-	void mix();
+	inline void mix();
 	FIFO fifo;
 	int delayOAM = 0;
 	void incDelay();
@@ -154,31 +154,31 @@ public:
 	int currentFrame = 0;
 	uint8_t ppuRead(uint16_t address);
 	void ppuWrite(uint16_t address, uint8_t data, uint8_t& ie);
-	uint8_t readOAM(uint16_t address);
+	 uint8_t readOAM(uint16_t address);
 	void writeOAM(uint16_t address, uint8_t data);
 	uint8_t readVRAM(uint16_t address);
 	void writeVRAM(uint16_t address, uint8_t data);
 	void ppuInit();
-	int getMode();
+	inline int getMode();
 	void updatePPU(uint8_t &ie);
 	void handleScanline(uint8_t& ie);
 	void oamScan();
 	void pixelFetcher();
-	void stepOne();
-	void stepOneP();
-	void stepTwo();
-	void stepTwoP();
-	void stepThree();
-	void stepThreeP();
+	inline void stepOne();
+	inline void stepOneP();
+	inline void stepTwo();
+	inline void stepTwoP();
+	inline void stepThree();
+	inline void stepThreeP();
 	void stepFour();
 	void stepFourP();
 	void handleDraw();
 	bool checkSprites();
-	void pushLCD();
+	inline void pushLCD();
 	int initSdl();
 	void checkEvents(bool& isRunning,uint8_t ie);
 	void freeSdl();
-	uint8_t ppuVramRead(uint16_t address);
+	inline uint8_t ppuVramRead(uint16_t address);
 	uint16_t returnColors(Pixel pixel);
 	std::vector<int> usedSprites;
 	uint8_t dma = 0xFF;
@@ -202,7 +202,7 @@ public:
 	int pos = 0;
 };
 
-void updateDisplay(uint32_t * frameBuffer);
+inline void updateDisplay(uint32_t * frameBuffer);
 //FF44 LY LCD Y coordinate (read only)]
 
 //FF45 LYC: compare

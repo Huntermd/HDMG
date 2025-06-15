@@ -34,13 +34,11 @@ void PPU::handleScanline(uint8_t& ie) {
 				STAT = (STAT & 0xFC) | 0x02;
 				ppuCounter = 0;
 				LY = 0;
-				uint16_t time = frameDotCounter;
+				
 				windowLineCounter = 0;
 				
 				currentFrame++;
-				if (SDL_GetTicks() - fpsTimer >= 1000) {
-					int current = currentFrame;
-				}
+				
 				frameDotCounter = 0;
 				checkEvents(*run, ie);
 				return;
@@ -338,7 +336,7 @@ void PPU::stepOneP() {
 }
 
 void PPU::stepTwo() {
-	uint8_t lineInTile = LY % 8;
+	uint8_t lineInTile = (LY+SCY)& 7;
 
 	uint16_t addressess;
 	uint16_t base;
@@ -349,13 +347,13 @@ void PPU::stepTwo() {
 }
 
 void PPU::stepTwoP() {
-	uint8_t lineInTile = LY % 8;
+	uint8_t lineInTile = (LY + SCY) & 7;
 	uint16_t addressess = 0x8000 + (tileNumberP * 16);
 	dataLowP = ppuVramRead(addressess + (tileyP * 2));
 }
 
 void PPU::stepThree() {
-	uint8_t lineInTile = LY % 8;
+	uint8_t lineInTile = (LY + SCY) & 7;
 	uint16_t addressess;
 	uint16_t base;
 	base = (LCDC & 0x10) == 0 && tileNumber <= 127 ? 0x9000 : 0x8000;
@@ -366,7 +364,7 @@ void PPU::stepThree() {
 }
 
 void PPU::stepThreeP() {
-	uint8_t lineInTile = LY % 8;
+	uint8_t lineInTile = (LY + SCY) & 7;
 	uint16_t addressess = 0x8000 + ((tileNumberP * 16));
 	dataHighP = ppuVramRead(addressess + (tileyP * 2) + 1);
 }
@@ -497,22 +495,9 @@ bool PPU::checkSprites() {
 		if (spriteX == 0 || spriteX >= 168) continue;
 		if (LCDX >= spriteX) {
 
-			if (!already.empty()) {
-				bool has = false;
-				for (int j = 0; j < already.size(); j++)
-				{
-					if (already[j] == i) {
-						has = true;
-						break;
-					}
-				}
-				if (has)continue;
-			}
-
-
-			already.emplace_back(i);
+			
 			spriteIndex = i;
-			pos = i;
+			pos = i+1;
 			return true;
 			//output << "Current frame: " << currentFrame << " Y: " << static_cast<int>(spriteY) << " X: " << static_cast<int>(spriteX) << " Tileindex: " << static_cast<int>(tileIndex) << " att: " << static_cast<int>(att) << " Ly: " << static_cast<int>(LY) << std::endl;
 
@@ -559,7 +544,7 @@ int PPU::initSdl() {
 
 		return -1;
 	}
-	window = SDL_CreateWindow("simple window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 576, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow("HDMG", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 576, SDL_WINDOW_SHOWN);
 	if (window == NULL)
 	{
 
@@ -583,13 +568,13 @@ int PPU::initSdl() {
 
 void PPU::checkEvents(bool& isRunning, uint8_t ie) {
 	SDL_Event e;
-	while (SDL_PollEvent(&e) != 0) {
+	if (SDL_PollEvent(&e) == 0)return;
 		if (e.type == SDL_QUIT) {
 			freeSdl();
 			SDL_Quit();
 			isRunning = false;
 
-			break;
+			return;
 		}
 
 		if (e.type == SDL_KEYDOWN) {
@@ -598,14 +583,14 @@ void PPU::checkEvents(bool& isRunning, uint8_t ie) {
 				freeSdl();
 				SDL_Quit();
 				isRunning = false;
-				break;
+				return;
 			}
 		}
 		if (e.type == SDL_KEYUP) {
 			keyUp(e);
 			
 		}
-	}
+	
 }
 
 void PPU::freeSdl() {
