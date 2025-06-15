@@ -12,7 +12,7 @@ public:
 	void loadHalt(bool* h);
 
 	uint8_t read(uint16_t address);
-	void updateVariables(bool IframUsed, bool IfbatteryUsed);
+	inline void updateVariables(bool IframUsed, bool IfbatteryUsed);
 	bool isBootRom = false;
 	
 	
@@ -29,7 +29,7 @@ private:
 	uint64_t currentTime;
 	bool ifRam = false;
 	bool ifBattery = false;
-	void initTime();
+	inline void initTime();
 	uint16_t days;
 	uint8_t latchedSeconds = 0;
 	uint8_t latchedMinutes = 0;
@@ -41,8 +41,8 @@ private:
 	uint8_t hours = 0;
 	uint8_t dayLow;
 	uint8_t dayHigh;
-	void incrementDay();
-	void updateTime();
+	inline void incrementDay();
+	inline void updateTime();
 	int dayCounter = 0;
 	
 	bool carryFlag = false;

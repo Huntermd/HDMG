@@ -31,7 +31,7 @@ private:
 	int opCount = 0;
 	
 	
-	void getOpcode();
+	inline void getOpcode();
 	bool testEnable = false;
 	std::vector<std::vector<uint16_t>> testRam = {
 		
@@ -78,48 +78,48 @@ private:
 	uint8_t seperateByteCB;
 	void InstructionSet();
 	void cbInstructionSet();
-	void LoadN8(uint8_t& registerVal, int count);
-	void Add16(uint16_t& registerVal);
-	void INC16(uint16_t& registerVal, uint8_t& upperBit, uint8_t& lowerBit);
-	void DEC16(uint16_t& registerVal, uint8_t& upperBit, uint8_t& lowerBit);
-	void INC8(uint8_t& registerVal);
-	void DEC8(uint8_t& registerVal);
-	void LoadR8R8(uint8_t& registerValLeft, uint8_t& registerValRight);
-	void LoadAddressR8(uint8_t& registerVal);
-	void LoadR8Address(uint8_t& registerVal);
-	void AddR8R8(uint8_t& registerVal);
-	void abcR8R8(uint8_t& registerVal);
-	void subR8(uint8_t& registerVal);
-	void sbcR8R8(uint8_t& registerVal);
-	void andR8(uint8_t& registerVal);
-	void xorR8(uint8_t& registerVal);
-	void orR8(uint8_t& registerVal);
-	void cpR8(uint8_t& registerVal);
-	void retCC(bool cc);
-	void popR16(uint8_t& upperBit, uint8_t& lowerBit, uint16_t& registerVal);
-	void jumpCC(bool cc);
-	void callCC(bool cc);
-	void rstVec(uint8_t vec);
-	void reti();
-	void pushR16(uint8_t& upperBit, uint8_t& lowerBit, uint16_t& registerVal);
-	void rlc(uint8_t& r8);
-	void rrc(uint8_t& r8);
-	void rl(uint8_t& r8);
-	void rr(uint8_t& r8);
-	void sla(uint8_t& r8);
-	void sra(uint8_t& r8);
-	void swap(uint8_t& r8);
-	void srl(uint8_t& r8);
-	void bit(uint8_t u3, uint8_t& r8);
-	void res(uint8_t u3, uint8_t& r8);
-	void set(uint8_t u3, uint8_t& r8);
+	inline void LoadN8(uint8_t& registerVal, int count);
+	inline void Add16(uint16_t& registerVal);
+	inline void INC16(uint16_t& registerVal, uint8_t& upperBit, uint8_t& lowerBit);
+	inline void DEC16(uint16_t& registerVal, uint8_t& upperBit, uint8_t& lowerBit);
+	inline void INC8(uint8_t& registerVal);
+	inline void DEC8(uint8_t& registerVal);
+	inline void LoadR8R8(uint8_t& registerValLeft, uint8_t& registerValRight);
+	inline void LoadAddressR8(uint8_t& registerVal);
+	inline void LoadR8Address(uint8_t& registerVal);
+	inline void AddR8R8(uint8_t& registerVal);
+	inline void abcR8R8(uint8_t& registerVal);
+	inline void subR8(uint8_t& registerVal);
+	inline void sbcR8R8(uint8_t& registerVal);
+	inline void andR8(uint8_t& registerVal);
+	inline void xorR8(uint8_t& registerVal);
+	inline void orR8(uint8_t& registerVal);
+	inline void cpR8(uint8_t& registerVal);
+	inline void retCC(bool cc);
+	inline void popR16(uint8_t& upperBit, uint8_t& lowerBit, uint16_t& registerVal);
+	inline void jumpCC(bool cc);
+	inline void callCC(bool cc);
+	inline void rstVec(uint8_t vec);
+	inline void reti();
+	inline void pushR16(uint8_t& upperBit, uint8_t& lowerBit, uint16_t& registerVal);
+	inline void rlc(uint8_t& r8);
+	inline void rrc(uint8_t& r8);
+	inline void rl(uint8_t& r8);
+	inline void rr(uint8_t& r8);
+	inline void sla(uint8_t& r8);
+	inline void sra(uint8_t& r8);
+	inline void swap(uint8_t& r8);
+	inline void srl(uint8_t& r8);
+	inline void bit(uint8_t u3, uint8_t& r8);
+	inline void res(uint8_t u3, uint8_t& r8);
+	inline void set(uint8_t u3, uint8_t& r8);
 	//Interruptions
 	bool ifEi = false;
 	
 	uint8_t ime = 0;
 	uint8_t ie = 0;
 	uint8_t iF = 0;
-	void jumpInterruptions(uint8_t address);
+	inline void jumpInterruptions(uint8_t address);
 	void handleInterruptions();
 
 	//I/O
@@ -141,17 +141,17 @@ private:
 	uint8_t cyclesTilTimaIRQ = 0;
 	bool raiseIRQ = false;
 	uint16_t prevDCounter = 0;
-	void incState();
+	inline void incState();
 	void sysClkChange(uint16_t new_value);
-	void detectEdge(uint8_t before, uint8_t after);
-	void mCycle();
+	inline void detectEdge(uint8_t before, uint8_t after);
+	inline void mCycle();
 	//DMA
 	bool dmaActive = false;
 	uint16_t sourceBase = 0;
 	uint8_t dmaIndex = 0;
 	uint8_t dmaDelay = 2;
 	uint8_t readByte(uint16_t address);
-	void dma();
+	inline void dma();
 	uint8_t byte = 0x00;
 
 };
