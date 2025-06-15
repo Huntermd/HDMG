@@ -70,11 +70,13 @@ void Mapper::handleVariables(uint8_t type){
 	if (type == 0x13) {
 		ifRam = true;
 		ifBattery = true;
+		initTime();
+		ifRTCchoosen = false;
 	}
 }
 
 void Mapper::loadCart(){
-	cart.loadRom("Tetris.gb");
+	cart.loadRom("Pokemon-red.gb");
 	ifCartLoaded = true;
 	
 }
@@ -315,13 +317,18 @@ void Mapper::mbc3Write(uint16_t address, uint8_t data){
 			ifRTC = false;
 		}
 	}
-
+	if (address >= 0x2000 && address <= 0x3FFF) {
+		int bank = (data & 0x7F);
+		if (bank == 0) bank = 1;
+		romBankNum = bank;
+		
+	}
 	if (address >= 0x4000 && address <= 0x5FFF) {
 		if (ifRam && (data >= 0x00 && data <= 0x03)) {
 			if (data >= 0x00 && data <= 0x03) {
 				ramBankNum = data;
 				ifRTCchoosen = false;
-				std::cout << std::hex << ramBankNum << "\n";
+				//std::cout << std::hex << ramBankNum << "\n";
 			}
 		}
 
@@ -345,7 +352,7 @@ void Mapper::mbc3Write(uint16_t address, uint8_t data){
 			default: break; // Invalid RTC register
 			}
 		}
-		else if (ifRam) {
+		if (ifRam) {
 
 			uint16_t offset = address - 0xA000;
 			cart.write(offset, data, ramBankNum);
