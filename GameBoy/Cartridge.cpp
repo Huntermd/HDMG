@@ -1,9 +1,14 @@
 #include "Cartridge.h"
 #include <iomanip>
+#include <ctime>
 uint8_t Cartridge::getMBC(){
 	return romBanks[0][0x0147];
 }
-Cartridge::~Cartridge(){}
+Cartridge::~Cartridge(){
+	if (getMBC() == 0x13) {
+		//saveRam();
+	}
+}
 
 uint8_t Cartridge::read(uint16_t address,int bankNumber){
 	if (!ifLoaded) {
@@ -16,6 +21,10 @@ uint8_t Cartridge::readRam(uint16_t address, int bankNumber){
 	if (!ifLoaded) {
 		return -1;
 	}
+	if ((address+ 0xA000) == 0xB523) {
+		int hey = 0;
+	}
+
 	return ramBanks[bankNumber][address];
 }
 
@@ -55,9 +64,14 @@ void Cartridge::loadRom(const char* filePath){
 	for (int i = 0; i < romBankNumber; i++) {
 		romBanks.emplace_back(buffer.begin() + i * bankSize,buffer.begin() + (i+1) * bankSize);
 	}
-	for (int i = 0; i < ramBankNumber; i++) {
-		ramBanks.emplace_back(buffer.begin() + ramOffset + i * OpitonalbankSize2, buffer.begin() + ramOffset + (i + 1) * OpitonalbankSize2);
+	//
+	loadRam("Pokemon-red.sav");
+	if (!ramLoaded) {
+		for (int i = 0; i < ramBankNumber; i++) {
+			ramBanks.emplace_back(8192,0x00);
+		}
 	}
+	
 }
 
 
@@ -108,6 +122,30 @@ void Cartridge::write(uint16_t address, uint8_t data, int bankNumber){
 		return;
 	}
 	ramBanks[bankNumber][address] = data;
+}
+
+void Cartridge::loadRTC(uint8_t *r){
+	for (size_t i = 0; i < 10; i++){
+		rtcRegs[i] = r[i];
+
+	}
+	uint64_t timestamp = getUnixTimeStamp();
+	uint8_t buffer[8];
+	
+	for (int i = 0; i < 8; i++){
+		buffer[i] = (timestamp >> (8 * i)) & 0xFF;
+
+
+	}
+	for (int i = 10, n = 0; i < 18; i++,n++) {
+		rtcRegs[i] = buffer[n];
+
+	}
+}
+
+uint64_t Cartridge::getUnixTimeStamp(){
+	
+	return static_cast<uint64_t>(std::time(nullptr));
 }
 
 void Cartridge::getRamRomsize(){
@@ -210,6 +248,55 @@ void Cartridge::getRamBankSize(std::vector<unsigned char> file){
 		break;
 	}
 	}
+}
+
+void Cartridge::saveRam(){
+	std::ofstream saveFile("Pokemon-red.sav", std::ios::binary);
+	if (saveFile.is_open()) {
+		for (int i = 0; i < ramBanks.size(); i++){
+			saveFile.write(reinterpret_cast<char*>(ramBanks[i].data()), 8192);
+
+		}
+		//saveFile.write(reinterpret_cast<char*>(rtcRegs), 48);
+		saveFile.close();
+	}
+}
+
+void Cartridge::loadRam(const char* fileName){
+	std::ifstream file;
+	std::streampos sizeBuffer; //streampos is the type returned by tellg()
+	std::streampos begin;
+	std::streampos end;
+	int MaxSize = 32 * 1024;
+
+	file.open(fileName, std::ifstream::binary | std::ios::ate); // ios::ate flag, which means that the get pointer will be positioned at the end of the file.
+	if (!file.is_open()) {
+		return;
+	}
+	sizeBuffer = file.tellg();
+	size = static_cast<int>(sizeBuffer);
+	file.seekg(0, std::ios::beg);
+	std::vector<uint8_t> bufferT(MaxSize);
+	file.read(reinterpret_cast<char*>(bufferT.data()), MaxSize);
+
+
+	file.close();
+	//int ramOffset = romBankNumber * OpitonalbankSize2;
+	ramBanks.clear();
+	for (int i = 0; i < ramBankNumber; i++) {
+		auto start = bufferT.begin() + (i * OpitonalbankSize2);
+		auto end = start + OpitonalbankSize2;
+		if (end <= bufferT.end()) {
+			ramBanks.emplace_back(start, end);
+		}
+		else {
+			break;
+		}
+		//ramBanks.emplace_back(buffer.begin() + i * OpitonalbankSize2, buffer.begin() + (i + 1) * OpitonalbankSize2);
+	}
+	
+	int itSize = ramBanks.size();
+	ramLoaded = true;
 }
 
 

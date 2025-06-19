@@ -3,8 +3,8 @@
 
 
 
-Mapper::~Mapper()
-{
+Mapper::~Mapper(){
+	handleRTC();
 }
 
 Mapper::Mapper(){
@@ -70,8 +70,12 @@ void Mapper::handleVariables(uint8_t type){
 	if (type == 0x13) {
 		ifRam = true;
 		ifBattery = true;
-		initTime();
-		ifRTCchoosen = false;
+		//initTime();
+		//ifRTCchoosen = false;
+		
+		
+		
+
 	}
 }
 
@@ -85,12 +89,20 @@ void Mapper::initTime(){
 	auto t1 = std::chrono::system_clock::now();
 	currentTime = std::chrono::time_point_cast<std::chrono::seconds>(t1).time_since_epoch().count();
 
-	seconds = (currentTime % 60);
+
+	/*seconds = (currentTime % 60);
 	minutes = (currentTime / 60) % 60;
 	hours = (currentTime / 3600) % 24;
 	days = (currentTime / 86400);
 	dayLow = days & 0xFF;
 	dayHigh = (days >> 8) & 0x03;
+*/
+	seconds = 0;
+	minutes = 0;
+	hours = 0;
+	days = 0;
+	dayLow = 0;
+	dayHigh = 0;
 }
 
 void Mapper::incrementDay(){
@@ -243,7 +255,7 @@ uint8_t Mapper::mbc3Read(uint16_t address){
 		return cart.read(offset, romBankNum);
 	}
 
-	if (address >= 0xA000 && address <= 0xBFFF && ifRTC) {
+	if (address >= 0xA000 && address <= 0xBFFF && ifRam) {
 
 		if (ifRTCchoosen) {
 			switch (RTC) {
@@ -308,25 +320,29 @@ void Mapper::mbc3Write(uint16_t address, uint8_t data){
 		return;
 	}
 	if (address >= 0x0000 && address <= 0x1FFF) {
-		if (data == 0x0A) {
+		if ((data& 0x0F) == 0x0A) {
 			ifRam = true;
-			ifRTC = true;
+			//ifRTC = true;
 		}
 		else {
 			ifRam = false;
-			ifRTC = false;
+			//ifRTC = false;
 		}
 	}
 	if (address >= 0x2000 && address <= 0x3FFF) {
 		int bank = (data & 0x7F);
 		if (bank == 0) bank = 1;
+		if (bank > cart.romBankNumber) bank %= cart.romBankNumber;
+
+		
 		romBankNum = bank;
+		
 		
 	}
 	if (address >= 0x4000 && address <= 0x5FFF) {
 		if (ifRam && (data >= 0x00 && data <= 0x03)) {
 			if (data >= 0x00 && data <= 0x03) {
-				ramBankNum = data;
+				ramBankNum = data & 0x03;
 				ifRTCchoosen = false;
 				//std::cout << std::hex << ramBankNum << "\n";
 			}
@@ -340,7 +356,7 @@ void Mapper::mbc3Write(uint16_t address, uint8_t data){
 		}
 	}
 
-	if (address >= 0xA000 && address <= 0xBFFF && ifRTC) {
+	if (address >= 0xA000 && address <= 0xBFFF && ifRam) {
 
 		if (ifRTC && ifRTCchoosen) {
 			switch (RTC) {
@@ -374,4 +390,9 @@ void Mapper::mbc3Write(uint16_t address, uint8_t data){
 
 		}
 	}
+}
+
+void Mapper::handleRTC(){
+	//uint8_t RTCRegs[10] = { seconds,minutes,hours,dayLow,dayHigh,latchedSeconds,latchedMinutes,latchedHours,latchedDayLow,latchedDayHigh };
+	//cart.loadRTC(RTCRegs);
 }

@@ -64,7 +64,7 @@ private:
 	//MBC3
 	uint8_t mbc3Read(uint16_t address);
 	void mbc3Write(uint16_t address, uint8_t data);
-	
+	void handleRTC();
 
 	
 };

@@ -25,15 +25,18 @@ public:
 	uint8_t read(uint16_t address,int bankNumber);
 	uint8_t readRam(uint16_t address, int bankNumber);
 	void loadRom(const char* filePath);
-	
+	int romBankNumber = 0;
 	
 	std::vector<unsigned char> getHeader();
 	void getHeaderData();
 	int cartridgeType;
 	void write(uint16_t address, uint8_t data, int bankNumber);
+	void loadRTC(uint8_t* r);
+	uint8_t rtcRegs[18];
+	std::vector<uint8_t> rtc; 
 private:
-	
-	
+	uint64_t getUnixTimeStamp();
+	bool ramLoaded = false;
 	void getRamRomsize();
 	
 	int numBanks;
@@ -44,8 +47,9 @@ private:
 	std::vector<std::vector<uint8_t>> ramBanks;
 	void getRomBankSize(std::vector<unsigned char> file);
 	void getRamBankSize(std::vector<unsigned char> file);
-	int romBankNumber = 0;
-	int ramBankNumber = 0;
 	
+	int ramBankNumber = 0;
+	void saveRam();
+	void loadRam(const char* fileName);
 
 };
