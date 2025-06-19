@@ -306,6 +306,7 @@ void PPU::stepOne() {
 		tileX = (((SCX + fetcherX) / 8) & 0x1F); tileY = ((LY + SCY) & 0xFF) / 8;
 	}
 	tileNumber = ppuVramRead(defaultAddress + (tileY * 32 + tileX));
+	
 }
 
 void PPU::stepOneP() {
@@ -338,10 +339,12 @@ void PPU::stepOneP() {
 void PPU::stepTwo() {
 	uint8_t lineInTile = (LY+SCY)& 7;
 
+
 	uint16_t addressess;
 	uint16_t base;
 	base = (LCDC & 0x10) == 0 && tileNumber <= 127 ? 0x9000 : 0x8000;
 	addressess = base + (tileNumber * 16);
+	
 	dataLow = ppuVramRead(addressess + (lineInTile * 2));
 
 }
@@ -349,6 +352,7 @@ void PPU::stepTwo() {
 void PPU::stepTwoP() {
 	uint8_t lineInTile = (LY + SCY) & 7;
 	uint16_t addressess = 0x8000 + (tileNumberP * 16);
+
 	dataLowP = ppuVramRead(addressess + (tileyP * 2));
 }
 
@@ -381,10 +385,11 @@ void PPU::stepFour() {
 
 	}
 	else {
+		
 		if (bgFifo.size() == 0) {
 
-			if (fetcherX == 0) {
-				uint8_t offset = SCX % 8;
+			if (fetcherX == 0 && !ifWindow) {
+				uint8_t offset = (SCX+ fetcherX) % 8;
 				for (int i = 7 - offset; i >= 0; i--) {
 					uint8_t low = (dataLow >> i) & 1;
 					uint8_t high = (dataHigh >> i) & 1;
@@ -492,7 +497,7 @@ bool PPU::checkSprites() {
 
 
 		if (LY < spriteY || LY >= spriteY + spriteHeight) continue;
-		if (spriteX == 0 || spriteX >= 168) continue;
+		if ( spriteX >= 168) continue;
 		if (LCDX >= spriteX) {
 
 			

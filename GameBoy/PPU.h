@@ -176,7 +176,7 @@ public:
 	bool checkSprites();
 	inline void pushLCD();
 	int initSdl();
-	void checkEvents(bool& isRunning,uint8_t ie);
+	inline void checkEvents(bool& isRunning,uint8_t ie);
 	void freeSdl();
 	inline uint8_t ppuVramRead(uint16_t address);
 	uint16_t returnColors(Pixel pixel);
