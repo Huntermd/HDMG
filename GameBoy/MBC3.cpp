@@ -211,12 +211,19 @@ void MBC3::initTime(){
 	auto t1 = std::chrono::system_clock::now();
 	currentTime = std::chrono::time_point_cast<std::chrono::seconds>(t1).time_since_epoch().count();
 	
-	seconds = (currentTime % 60);
+	/*seconds = (currentTime % 60);
 	minutes = (currentTime / 60) % 60;
 	hours = (currentTime / 3600) % 24;
 	days = (currentTime / 86400);
 	dayLow = days & 0xFF;
 	dayHigh = (days >> 8) & 0x03;
+*/
+	seconds = 0;
+	minutes = 0;
+	hours = 0;
+	days = 0;
+	dayLow = 0;
+	dayHigh = 0;
 
 	
 
