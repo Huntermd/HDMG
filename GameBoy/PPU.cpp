@@ -102,7 +102,7 @@ void PPU::handleScanline(uint8_t& ie) {
 			bgFifo.clear();
 			spriteFifo.clear();
 			fifo.empty();
-			already.clear();
+			
 			pos = 0;
 
 
@@ -615,22 +615,7 @@ uint8_t PPU::ppuVramRead(uint16_t address)
 
 }
 
-uint16_t PPU::returnColors(Pixel pixel) {
-	if (pixel.isObj) {
-		if (pixel.palette != 0) {
 
-			uint8_t shadeBits = (obj1 >> (pixel.color * 2)) & 0x03;
-			return gbPalette[shadeBits];
-		}
-		else {
-
-			uint8_t shadeBits = (obj0 >> (pixel.color * 2)) & 0x03;
-			return gbPalette[shadeBits];
-		}
-	}
-
-	return gbPalette[pixel.color & 0x03];
-}
 
 void PPU::reset(){
 	LY = 0;
@@ -639,7 +624,7 @@ void PPU::reset(){
 	bgFifo.clear();
 	spriteFifo.clear();
 	fifo.empty();
-	already.clear();
+
 	slOamBuffer.clear();
 	spriteCount = 0;
 	oBufferPos = 0;

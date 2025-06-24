@@ -4,10 +4,7 @@
 #include "vector"
 
 
-typedef struct joypad_T {
-	uint8_t actionSelect=0;
-	uint8_t directionSelect=0;
-}JOYP;
+
 const uint32_t gbPalette[4] = {
 	0xFFFFFFFF,
 	0xAAAAAAFF,
@@ -15,12 +12,7 @@ const uint32_t gbPalette[4] = {
 	0x000000FF
 	
 };
-const uint32_t objPalette[4]{
-	0xFFFFFFFF,
-	0XFFAAAAAA,
-	0xFF555555,
-	0xFF000000
-};
+
 /*
 When handling backGround pixels we will only need the color and the other will be set to 0
 and isObj will be set to false
@@ -83,13 +75,13 @@ public:
 	uint8_t joypadSelect = 0x30;
 	 void loadRun(bool* r);
 	bool* run;
-	JOYP jp;
+	
 	void keyUp(SDL_Event& e);
 	void keyDown(SDL_Event& e);
 	void loadDMA(bool* d);
 	bool* dmaActive;
-	int dotAmount = 3;
-	std::vector<int> already;
+	
+	
 	bool objectOn = false;
 	uint8_t vRam[8192];
 	uint32_t frameBuffer[160 * 144];
@@ -116,11 +108,11 @@ public:
 	int spriteCount = 0;
 	bool lcdJustTurnON = true;
 	int LcdEnableCounter = 0;
-	bool log = false;
+	
 	uint8_t fetcherX = 0;
 	uint8_t LCDX = 0;
-	uint8_t prevFecthX = 0;
-	uint8_t fetcherY = 0;
+	
+	
 	uint8_t tileNumber = 0;
 	uint8_t tileNumberP = 0;
 	uint8_t tileAddress = 0;
@@ -134,7 +126,7 @@ public:
 	uint8_t windowLineCounter = 0;
 	bool ifOn = false;
 	bool paused = false;
-	bool windowPause = false;
+	
 	bool isWindow = false;
 	bool spriteFecthActive = false;
 	bool lcdOff = false;
@@ -144,10 +136,10 @@ public:
 	void incDelay();
 	pixelFifo bgFifo;
 	pixelFifo spriteFifo;
-	pixelFifo bgBuffer;
+	
 	uint8_t pixelX = 0;
 	int stepCounter = 0;
-	int stepsUntilPause = 0;
+	
 	int stepCounterP = 0;
 	int spriteIndex = 0;
 	bool ifWindow = false;
@@ -179,23 +171,23 @@ public:
 	inline void checkEvents(bool& isRunning,uint8_t ie);
 	void freeSdl();
 	inline uint8_t ppuVramRead(uint16_t address);
-	uint16_t returnColors(Pixel pixel);
-	std::vector<int> usedSprites;
+	
+	
 	uint8_t dma = 0xFF;
 	
 	int delayCycle = 3;
-	int bgX = 0;
-	bool bgFetchEnable = true;
-	uint8_t prevTile = 0xFF;
+	
+	
+	
 	void reset();
-	int counter = 0;
+	
 	int shorten = 0;
 	bool lineZero = false;
-	bool initalTile = false;
-	int h_blank = 460;//Line zero h-blank
-	bool modeChange = false;
-	int changeMode = 0;
-	int cycleOffset = 1;
+	
+	
+	
+	
+	
 	void setFps();
 	int currentFPS = 0;
 	Uint32 fpsTimer;

@@ -11,43 +11,22 @@ public:
 	
 	GameBoy();
 	~GameBoy();
-	void testInstuctions();
+	
 	void testRom();
 	void loadComponets(Mapper* m, PPU* p);
 	
-	void callResult(uint8_t data);
-	std::string results;
+	
+	
 	bool isRunning = true;
-	void initLogging();
-	void closeTxt();
+	
+	
 	
 	
 	
 private:
-	
 	bool ifHalt = false;
-	void logData();
 	
-	int opCount = 0;
-	
-	
-	inline void getOpcode();
-	bool testEnable = false;
-	std::vector<std::vector<uint16_t>> testRam = {
-		
-		{17742,224},
-		{17743,63},
-		{65343,0}
-		
-		
-		
-		
-	
-		
-	
-		
-	};
-	
+	inline void getOpcode();	
 	uint8_t cpuRead(uint16_t address);
 	void cpuWrite(uint16_t address, uint8_t data);
 	void tCycle(int cycleCount);

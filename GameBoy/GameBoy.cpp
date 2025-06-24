@@ -6,9 +6,9 @@ int lineCount = 0;
 bool eiDelay = false;
 GameBoy::GameBoy(){
 	
-	if (!testEnable) {
+	
 		cpuInit();
-	}
+	
 	
 	
 	
@@ -19,53 +19,7 @@ GameBoy::~GameBoy(){
 
 }
 
-void GameBoy::testInstuctions(){
-	ime = 0;
-	ie = 0;
-	cycleCount = 0;
-	a = 164;
-	b = 197;
-	c = 214;
-	d = 62;
-	e = 232;
-	zeroFlag7 = (0 & 0x80) != 0;
-	subtractionFlag6 = (80 & 0x40) != 0;
-	halfCarryFlag5 = (80 & 0x20) != 0;
-	carryFlag4 = (80 & 0x10) != 0;
-	h = 191;
-	l =2;
-	BC = (b << 8) | c;
-	
-	programCounter = 17742;
-	stackPointer = 32175;
 
-	
-	uint8_t flags = 0;
-	do
-	{
-		getOpcode();
-		InstructionSet();
-
-	} while (cycleCount != 12);//programCounter < 45834);
-	flags |= (zeroFlag7 << 7);
-	flags |= (subtractionFlag6 << 6);
-	flags |= (halfCarryFlag5 << 5);
-	flags |= (carryFlag4 << 4);
-	std::cout << static_cast<int>(a) << "\n";
-	std::cout << static_cast<int>(b) << "\n";
-	std::cout << static_cast<int>(c) << "\n";
-	std::cout << static_cast<int>(d) << "\n";
-	std::cout << static_cast<int>(e) << "\n";
-	std::cout << static_cast<int>(flags) << "\n";
-	std::cout << static_cast<int>(h) << "\n";
-	std::cout << static_cast<int>(l) << "\n";
-	for (size_t i = 0; i < testRam.size(); i++){
-		std::cout << static_cast<int>(testRam[i][0])<<","<<static_cast<int>(testRam[i][1]) << "\n";
-
-	}
-	std::cout << static_cast<int>(programCounter) << "\n";
-	std::cout << static_cast<int>(stackPointer) << "\n";
-}
 
 void GameBoy::testRom(){
 	
@@ -104,55 +58,15 @@ void GameBoy::loadComponets(Mapper* m, PPU* p){
 
 }
 
-void GameBoy::callResult(uint8_t data){
-	results += static_cast<char>(data);
-	std::cout << results << "\n";
-	std::cout << "Cycle count is: " << cycleCount << "\n";
-}
-
-void GameBoy::closeTxt(){
-	outputFile.close();
-}
 
 
 
-void GameBoy::logData(){
-	uint8_t temp1 = cpuRead(programCounter);
-	uint8_t temp2 = cpuRead(programCounter + 1);
-	uint8_t temp3 = cpuRead(programCounter + 2);
-	uint8_t temp4 = cpuRead(programCounter + 3);
-	uint8_t flags = 0;
-	flags |= (zeroFlag7 << 7);
-	flags |= (subtractionFlag6 << 6);
-	flags |= (halfCarryFlag5 << 5);
-	flags |= (carryFlag4 << 4);
-	outputFile << "A: " << std::setw(2) << std::setfill('0') <<  std::hex << std::uppercase << static_cast<int>(a)
-		<< " F: " << std::setw(2) << std::setfill('0') << std::hex<<std::uppercase << static_cast<int>(flags)
-		 << " B: " << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(b)
-		<< " C: " << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(c)
-		<< " D: " << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(d)
-		<< " E: " << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(e)
-		<< " H: " << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(h)
-		<< " L: " << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(l)
-		<< " SP: " << std::setw(4) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(stackPointer)
-		<< " PC: " <<"00:" << std::setw(4) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(programCounter)
-		<<" (" 
-		<< std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(temp1)<< " "
-		<< std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(temp2) << " "
-		<< std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(temp3) << " "
-		<< std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(temp4)
-		<<")"
-		<< std::endl;
-	//<<" op: "<<std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(Opcode)
-}
 
-void GameBoy::initLogging(){
-	outputFile.open("myLogs.txt");
-	if (!outputFile.is_open()) {
-		std::cerr<< "Error opening file logs" << "\n";
-		exit(1);
-	}
-}
+
+
+
+
+
 
 
 
@@ -178,14 +92,7 @@ uint8_t GameBoy::cpuRead(uint16_t address){
 		}
 		return byte;
 	}
-	if (testEnable) {
-		for (int i = 0; i < testRam.size(); i++) {
-			if (address == testRam[i][0]) {
-				return testRam[i][1];
-			}
-		}
-
-	}
+	
 	if (address >= 0x0000 && address <= 0x3FFF&& !dmaActive) {
 		uint8_t data = map->read(address);
 		return data;
@@ -246,24 +153,6 @@ uint8_t GameBoy::cpuRead(uint16_t address){
 void GameBoy::cpuWrite(uint16_t address, uint8_t data){
 	mCycle();
 	if (dmaActive)return;
-	if (testEnable) {
-		bool includes = false;
-		int index = 0;
-		for (int i = 0; i < testRam.size(); i++) {
-			if (address == testRam[i][0]) {
-				includes = true;
-				index = i;
-				break;
-			}
-		}
-		if (includes) {
-			testRam[index][1] = data;
-		}
-		else {
-			testRam.emplace_back(address, data);
-		}
-	}
-	else {
 		if (address >= 0x0000 && address <= 0x3FFF && !dmaActive) {
 			map->write(address, data);
 		}
@@ -344,7 +233,7 @@ void GameBoy::cpuWrite(uint16_t address, uint8_t data){
 		if (address == 0xFFFF ) {
 			ie = data;
 		}
-	}
+	
 	
 }
 
