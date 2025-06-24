@@ -118,6 +118,7 @@
     <None Include=".gitignore" />
     <None Include="oam_dma_start.gb" />
     <None Include="sources-GS.gb" />
+    <None Include="CMakePresets.json" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="myLogs.txt" />
@@ -126,5 +127,6 @@
     <Text Include="Blargg5.txt" />
     <Text Include="Blargg9.txt" />
     <Text Include="Logs.txt" />
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
 </Project>

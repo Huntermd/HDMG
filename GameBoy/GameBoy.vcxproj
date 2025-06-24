@@ -106,7 +106,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -167,6 +167,7 @@
     <None Include="11-op a,(hl).gb" />
     <None Include="4-scanline_timing.gb" />
     <None Include="basic.gb" />
+    <None Include="CMakePresets.json" />
     <None Include="cpu_instrs.gb" />
     <None Include="dmg-acid2.gb" />
     <None Include="dmg_boot.bin" />
@@ -189,6 +190,7 @@
     <Text Include="Blargg4.txt" />
     <Text Include="Blargg5.txt" />
     <Text Include="Blargg9.txt" />
+    <Text Include="CMakeLists.txt" />
     <Text Include="EpicLog.txt" />
     <Text Include="Logs.txt" />
     <Text Include="myLogs.txt" />
