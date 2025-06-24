@@ -1,19 +1,26 @@
+#define SDL_MAIN_HANDLED
 #include <iostream>
 #include "GameBoy.h"
 #include <chrono>
 #include <thread>
-#include "string"
+#include "SDL2/SDL.h"
 #include "Mapper.h"
 #include "PPU.h"
 
 
-int WinMain() {
+int main(int argc, char* argv[]) {
+	std::string fileName;
+	fileName = argv[1];
 		
+		if (fileName.substr(fileName.size() - 3) != ".gb") {
+			std::cout << "Error Second Argument is not a .gb file";
+			exit(1);
+		}
 		PPU ppu = PPU();
 		if (ppu.initSdl() == -1) {
 			exit(1);
 		}
-		Mapper map = Mapper();
+		Mapper map = Mapper(fileName);
 		GameBoy gb = GameBoy();
 		gb.loadComponets(&map, &ppu);
 		//gb.testInstuctions();
