@@ -23,6 +23,12 @@ A gb emulator written in C++ with SDL and CLI support.
 ```bash
     /HDMG path/to/game.gb
 ```
+## Controls
+- Arrow Keys = D-pad
+- A
+- B
+- S = Start
+- D = Select
 ## Future Features
 - GBC support
 - APU support
