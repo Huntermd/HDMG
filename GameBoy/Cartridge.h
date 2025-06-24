@@ -22,19 +22,22 @@ public:
 		
 	}
 	~Cartridge();
-	uint8_t read(uint16_t address,int bankNumber);
-	uint8_t readRam(uint16_t address, int bankNumber);
+	uint8_t read(uint16_t address, uint16_t bankNumber);
+	uint8_t readRam(uint16_t address, uint16_t bankNumber);
 	void loadRom(const char* filePath);
 	int romBankNumber = 0;
 	
 	std::vector<unsigned char> getHeader();
 	void getHeaderData();
 	int cartridgeType;
-	void write(uint16_t address, uint8_t data, int bankNumber);
+	void write(uint16_t address, uint8_t data, uint16_t bankNumber);
 	void loadRTC(uint8_t* r);
 	uint8_t rtcRegs[18];
 	std::vector<uint8_t> rtc; 
+	std::string fileN;
+	void loadFileN(std::string s);
 private:
+	uint8_t savable[10] = { 0x02,0x03,0x0F,0x10,0x12,0x13,0x1A,0x1B,0x1D,0x1E };
 	uint64_t getUnixTimeStamp();
 	bool ramLoaded = false;
 	void getRamRomsize();

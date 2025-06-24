@@ -7,24 +7,24 @@ class Mapper {
 public:
 	bool* halt;
 	 ~Mapper();
-	 Mapper();
-	void write(uint16_t address, uint8_t data);
+	 Mapper(std::string f);
+	inline void write(uint16_t address, uint8_t data);
 	void loadHalt(bool* h);
 
-	uint8_t read(uint16_t address);
-	inline void updateVariables(bool IframUsed, bool IfbatteryUsed);
-	bool isBootRom = false;
+	inline uint8_t read(uint16_t address);
+	
+	
 	
 	
 private:
 	void handleVariables(uint8_t type);
-	void loadCart();
+	void loadCart(std::string f);
 	bool ifCartLoaded = false;
 	uint8_t mbcType;
 	Cartridge cart;
-	int bootBankNum = 0;
-	int romBankNum = 1;
-	int ramBankNum = 0;
+	uint16_t bootBankNum = 0;
+	uint16_t romBankNum = 1;
+	uint16_t ramBankNum = 0;
 	//MBC variables
 	uint64_t currentTime;
 	bool ifRam = false;
@@ -59,12 +59,14 @@ private:
 	uint8_t mbc1Read(uint16_t address);
 	void mbc1Write(uint16_t address, uint8_t data);
 	bool mode1 = false;
-	std::vector<uint8_t> bootrom;
-	void loadBoot();
+	
+	
 	//MBC3
 	uint8_t mbc3Read(uint16_t address);
 	void mbc3Write(uint16_t address, uint8_t data);
 	void handleRTC();
-
+	//MBC5
+	uint8_t mbc5Read(uint16_t address);
+	void mbc5Write(uint16_t address, uint8_t data);
 	
 };

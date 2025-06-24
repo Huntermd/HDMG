@@ -7,30 +7,19 @@ Mapper::~Mapper(){
 	handleRTC();
 }
 
-Mapper::Mapper(){
-	loadCart();
+Mapper::Mapper(std::string f){
+	cart.loadFileN(f);
+	loadCart(f);
 	mbcType = cart.getMBC();
-	handleVariables(mbcType);
+	
 }
 
 void Mapper::write(uint16_t address, uint8_t data){
-	switch (mbcType)
-	{
-	case 0x00: {
-		nmbcWrite(address, data);
-		break;
-	}
-	case 0x01: {
-		mbc1Write(address, data);
-		break;
-	}
-	case 0x13: {
-		mbc3Write(address, data);
-		break;
-	}
-	default:
-		break;
-	}
+	if (mbcType == 0x00) { nmbcWrite(address, data); return; }
+	if (mbcType >= 0x01 && mbcType <= 0x03) { mbc1Write(address, data); return; }
+	//if (mbcType >= 0x01 && mbcType <= 0x03)return mbc1Read(address);
+	if (mbcType >= 0x0F && mbcType <= 0x13) { mbc3Write(address, data); return; }
+	if (mbcType >= 0x19 && mbcType <= 0x1E) { mbc5Write(address, data); return; }
 	
 }
 
@@ -39,36 +28,24 @@ void Mapper::loadHalt(bool* h){
 }
 
 uint8_t Mapper::read(uint16_t address){
-	if (isBootRom && address < 0x0100)return bootrom[address];
-	 switch (mbcType)
-	{
-	case 0x00: {
-		return nmbcRead(address);
-		break;
-	}
-	case 0x01: {
-		return mbc1Read(address);
-		break;
-	}
-	case 0x13: {
-		return mbc3Read(address);
-	}
-	default:
-		break;
-	}
+	
+	if(mbcType == 0x00)return nmbcRead(address);
+	if (mbcType >= 0x01 && mbcType <= 0x03)return mbc1Read(address);
+	//if (mbcType >= 0x01 && mbcType <= 0x03)return mbc1Read(address);
+	if (mbcType >= 0x0F && mbcType <= 0x13)return mbc3Read(address);
+	if (mbcType >= 0x19 && mbcType <= 0x1E)return mbc5Read(address);
+	
+	
 	
 	
 	
 }
 
-void Mapper::updateVariables(bool IframUsed, bool IfbatteryUsed){
-	ifRam = IframUsed;
-	ifBattery = IfbatteryUsed;
-}
+
 
 void Mapper::handleVariables(uint8_t type){
 	if (type == 0x13) {
-		ifRam = true;
+		ifRam = false;
 		ifBattery = true;
 		//initTime();
 		//ifRTCchoosen = false;
@@ -79,8 +56,8 @@ void Mapper::handleVariables(uint8_t type){
 	}
 }
 
-void Mapper::loadCart(){
-	cart.loadRom("Pokemon-red.gb");
+void Mapper::loadCart(std::string f){
+	cart.loadRom(f.c_str());
 	ifCartLoaded = true;
 	
 }
@@ -222,23 +199,7 @@ void Mapper::mbc1Write(uint16_t address, uint8_t data){
 	}
 }
 
-void Mapper::loadBoot(){
-	std::ifstream file;
-	std::streampos sizeBuffer; //streampos is the type returned by tellg()
-	std::streampos begin;
-	std::streampos end;
-	int size = 0;
-	file.open("dmg_boot.bin", std::ifstream::binary | std::ios::ate); // ios::ate flag, which means that the get pointer will be positioned at the end of the file.
-	if (!file.is_open()) {
-		return;
-	}
-	
-	sizeBuffer = file.tellg();
-	size = static_cast<int>(sizeBuffer);
-	file.seekg(0, std::ios::beg);
-	
-	file.read(reinterpret_cast<char*>(bootrom.data()), 256);
-}
+
 
 uint8_t Mapper::mbc3Read(uint16_t address){
 	if (!ifCartLoaded) {
@@ -395,4 +356,46 @@ void Mapper::mbc3Write(uint16_t address, uint8_t data){
 void Mapper::handleRTC(){
 	//uint8_t RTCRegs[10] = { seconds,minutes,hours,dayLow,dayHigh,latchedSeconds,latchedMinutes,latchedHours,latchedDayLow,latchedDayHigh };
 	//cart.loadRTC(RTCRegs);
+}
+
+uint8_t Mapper::mbc5Read(uint16_t address){
+	if (address >= 0x0000 && address <= 0x3FFF) {
+		return cart.read(address, bootBankNum);
+	}
+	if (address >= 0x4000 && address <= 0x7FFF) {
+
+		uint16_t offset = address - 0x4000;
+		return cart.read(offset, romBankNum);
+	}
+	if (address >= 0xA000 && address <= 0xBFFF&&ifRam) {
+
+		uint16_t offset = address - 0xA000;
+		return cart.readRam(offset, ramBankNum);
+	}
+
+	return 0xFF;
+}
+
+void Mapper::mbc5Write(uint16_t address, uint8_t data){
+	if (address >= 0x0000 && address <= 0x1FFF) {
+		if ((data & 0x0F) == 0x0A) {
+			ifRam = true;
+		}
+		else {
+			ifRam = false;
+		}
+	}
+	if (address >= 0x2000 && address <= 0x2FFF) {
+		romBankNum = (romBankNum & 0x100) | data;
+	}
+	if (address >= 0x3000 && address <= 0x3FFF) {
+		romBankNum = (romBankNum & 0xFF) | ((data& 0x01)<<8);
+	}
+	if (address >= 0x4000 && address <= 0x5FFF) {
+		ramBankNum = (data & 0x0F);
+	}
+	if (address >= 0xA000 && address <= 0xBFFF) {
+		uint16_t offset = address - 0xA000;
+		cart.write(offset, data, ramBankNum);
+	}
 }

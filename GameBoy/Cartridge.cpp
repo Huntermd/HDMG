@@ -5,25 +5,23 @@ uint8_t Cartridge::getMBC(){
 	return romBanks[0][0x0147];
 }
 Cartridge::~Cartridge(){
-	if (getMBC() == 0x13) {
-		//saveRam();
+	if (ramBankNumber > 0) {
+		saveRam();
 	}
 }
 
-uint8_t Cartridge::read(uint16_t address,int bankNumber){
+uint8_t Cartridge::read(uint16_t address, uint16_t bankNumber){
 	if (!ifLoaded) {
 		return -1;
 	}
 	return romBanks[bankNumber][address];
 }
 
-uint8_t Cartridge::readRam(uint16_t address, int bankNumber){
+uint8_t Cartridge::readRam(uint16_t address, uint16_t bankNumber){
 	if (!ifLoaded) {
 		return -1;
 	}
-	if ((address+ 0xA000) == 0xB523) {
-		int hey = 0;
-	}
+	
 
 	return ramBanks[bankNumber][address];
 }
@@ -65,7 +63,13 @@ void Cartridge::loadRom(const char* filePath){
 		romBanks.emplace_back(buffer.begin() + i * bankSize,buffer.begin() + (i+1) * bankSize);
 	}
 	//
-	loadRam("Pokemon-red.sav");
+	
+	
+		if (ramBankNumber> 0) {
+			loadRam(fileN.c_str());
+			
+		}
+	
 	if (!ramLoaded) {
 		for (int i = 0; i < ramBankNumber; i++) {
 			ramBanks.emplace_back(8192,0x00);
@@ -117,7 +121,7 @@ void Cartridge::getHeaderData(){
 
 }
 
-void Cartridge::write(uint16_t address, uint8_t data, int bankNumber){
+void Cartridge::write(uint16_t address, uint8_t data, uint16_t bankNumber){
 	if (!ifLoaded) {
 		return;
 	}
@@ -141,6 +145,12 @@ void Cartridge::loadRTC(uint8_t *r){
 		rtcRegs[i] = buffer[n];
 
 	}
+}
+
+void Cartridge::loadFileN(std::string s){
+	fileN = s;
+	fileN.resize(fileN.size() - 3);
+	fileN += ".sav";
 }
 
 uint64_t Cartridge::getUnixTimeStamp(){
@@ -251,7 +261,7 @@ void Cartridge::getRamBankSize(std::vector<unsigned char> file){
 }
 
 void Cartridge::saveRam(){
-	std::ofstream saveFile("Pokemon-red.sav", std::ios::binary);
+	std::ofstream saveFile(fileN.c_str(), std::ios::binary);
 	if (saveFile.is_open()) {
 		for (int i = 0; i < ramBanks.size(); i++){
 			saveFile.write(reinterpret_cast<char*>(ramBanks[i].data()), 8192);
@@ -267,7 +277,7 @@ void Cartridge::loadRam(const char* fileName){
 	std::streampos sizeBuffer; //streampos is the type returned by tellg()
 	std::streampos begin;
 	std::streampos end;
-	int MaxSize = 32 * 1024;
+	int MaxSize = (ramBankNumber * OpitonalbankSize2);
 
 	file.open(fileName, std::ifstream::binary | std::ios::ate); // ios::ate flag, which means that the get pointer will be positioned at the end of the file.
 	if (!file.is_open()) {
