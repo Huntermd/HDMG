@@ -36,6 +36,7 @@ public:
 	std::vector<uint8_t> rtc; 
 	std::string fileN;
 	void loadFileN(std::string s);
+	bool isGBC = false;
 private:
 	uint8_t savable[10] = { 0x02,0x03,0x0F,0x10,0x12,0x13,0x1A,0x1B,0x1D,0x1E };
 	uint64_t getUnixTimeStamp();

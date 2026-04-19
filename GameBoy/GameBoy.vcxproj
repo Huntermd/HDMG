@@ -127,7 +127,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Bus.cpp" />
     <ClCompile Include="Cartridge.cpp" />
     <ClCompile Include="GameBoy.cpp" />
     <ClCompile Include="jsonTest.cpp" />
@@ -140,7 +139,6 @@
     <ClCompile Include="PPU.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bus.h" />
     <ClInclude Include="Cartridge.h" />
     <ClInclude Include="GameBoy.h" />
     <ClInclude Include="jsonTest.h" />
@@ -167,11 +165,14 @@
     <None Include="11-op a,(hl).gb" />
     <None Include="4-scanline_timing.gb" />
     <None Include="basic.gb" />
+    <None Include="bg_oam_priority.gbc" />
+    <None Include="cgb-acid2.gbc" />
     <None Include="CMakePresets.json" />
     <None Include="cpu_instrs.gb" />
     <None Include="dmg-acid2.gb" />
     <None Include="dmg_boot.bin" />
     <None Include="hblank_ly_scx_timing-GS.gb" />
+    <None Include="hblank_vram_dma.gbc" />
     <None Include="instr_timing.gb" />
     <None Include="interrupt_time.gb" />
     <None Include="intr_2_mode3_timing.gb" />
@@ -181,6 +182,7 @@
     <None Include="mem_timing.gb" />
     <None Include="oam_bug.gb" />
     <None Include="oam_dma_start.gb" />
+    <None Include="Pokemon-Crystal.gbc" />
     <None Include="Pokemon-red.gb" />
     <None Include="reg_read.gb" />
     <None Include="sources-GS.gb" />

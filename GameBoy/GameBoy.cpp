@@ -1,13 +1,14 @@
 #include "GameBoy.h"
 #include "iomanip"
 
+
 std::ofstream outputFile;
 int lineCount = 0;
 bool eiDelay = false;
 GameBoy::GameBoy(){
 	
 	
-		cpuInit();
+		//cpuInit();
 	
 	
 	
@@ -32,6 +33,7 @@ void GameBoy::testRom(){
 			ime = 1;
 			eiDelay = false;
 		}
+
 		
 
 
@@ -53,7 +55,16 @@ void GameBoy::loadComponets(Mapper* m, PPU* p){
 	this->ppu = p;
 	ppu->loadRun(&isRunning);
 	ppu->loadDMA(&dmaActive);
+	ppu->loadBlank(&isHblank);
 	map->loadHalt(&ifHalt);
+	isGBC = map->getGBC();
+	ppu->loadGBC(&isGBC);
+	if (isGBC) {
+		init();
+	}
+	else {
+		cpuInit();
+	}
 
 
 }
@@ -82,6 +93,25 @@ uint8_t GameBoy::cpuRead(uint16_t address){
 	mCycle();
 	//if (dmaActive)return byte;
 	if (dmaActive) {
+		if (isGBC) {
+			if ((address >= 0xFE00 && address <= 0xFE9F) || (address >= 0xFF80 && address <= 0xFFFE)|| (address >= 0xD000 && address <= 0xDFFF)) {
+				if (address >= 0xD000 && address <= 0xDFFF) {
+					uint8_t bank = SBVK & 0x07;
+					if (bank == 0)bank = 1;
+					return WRAM[bank][address - 0xD000];
+				}
+				if (address >= 0xFE00 && address <= 0xFE9F) {
+					return ppu->readOAM(address);
+				}
+				if (address >= 0xFF80 && address <= 0xFFFE) {
+					uint8_t data = this->hram[address - 0xFF80];
+
+					return data;
+				}
+				
+			}
+			return byte;
+		}
 		if ((address >= 0xFE00 && address <= 0xFE9F) || (address >= 0xFF80 && address <= 0xFFFE)) {
 			if (address >= 0xFE00 && address <= 0xFE9F) {
 				return ppu->readOAM(address);
@@ -108,7 +138,18 @@ uint8_t GameBoy::cpuRead(uint16_t address){
 		return map->read(address);
 	}
 	if (address >= 0xC000 && address <= 0xDFFF && !dmaActive) {
-		return wram[address - 0xC000];
+		if (!isGBC) {
+			return wram[address - 0xC000];
+			
+		}
+		if (address >= 0xC000 && address <= 0xCFFF && isGBC) {
+			return WRAM[0][address - 0xC000];
+			
+		}
+		uint8_t bank = SBVK & 0x07;
+		if (bank == 0)bank = 1;
+		return WRAM[bank][address - 0xD000] ;
+		
 	}
 	if (address >= 0xFE00 && address <= 0xFE9F && !dmaActive) {
 		return ppu->readOAM(address);
@@ -132,7 +173,29 @@ uint8_t GameBoy::cpuRead(uint16_t address){
 	if (address == 0xFF07 && !dmaActive) {
 		return tac;
 	}
+	if (address == 0xFF51 && isGBC) {
+		return HDMA1;
+	}
+	if (address == 0xFF52 && isGBC) {
+		return HDMA2 ;
+	}
+	if (address == 0xFF53 && isGBC) {
+		return HDMA3;
+	}
+	if (address == 0xFF54 && isGBC) {
+		return HDMA4;
+	}
+	if (address == 0xFF55 && isGBC) {
+		return (hdmaActive ? 0 : 0x80) | ((hdmaLength - 1) & 0x7F);
+	}
 	if (address >= 0xFF40 && address <= 0xFF4B && !dmaActive) {
+		return ppu->ppuRead(address);
+	}
+	if (address == 0xFF70 && !dmaActive && isGBC) {
+		return SBVK | 0xF8;
+	}
+	
+	if (address >= 0xFF4F && address <= 0xFF6B && isGBC) {
 		return ppu->ppuRead(address);
 	}
 	if (address >= 0xFF00 && address <= 0xFF7F && !dmaActive) {
@@ -166,7 +229,19 @@ void GameBoy::cpuWrite(uint16_t address, uint8_t data){
 			map->write(address, data);
 		}
 		if (address >= 0xC000 && address <= 0xDFFF && !dmaActive) {
-			wram[address - 0xC000] = data;
+			if (!isGBC) {
+				wram[address - 0xC000] = data;
+				return;
+			}
+			if (address >= 0xC000 && address <= 0xCFFF && isGBC) {
+				WRAM[0][address - 0xC000] = data;
+				return;
+			}
+			uint8_t bank = SBVK & 0x07;
+			if (bank == 0)bank = 1;
+			WRAM[bank][address - 0xD000] = data;
+
+			
 		}
 		if (address >= 0xFE00 && address <= 0xFE9F && !dmaActive) {
 			
@@ -213,6 +288,78 @@ void GameBoy::cpuWrite(uint16_t address, uint8_t data){
 			ppu->ppuWrite(address,data,iF);
 			return;
 		}
+		if (address == 0xFF70 && !dmaActive&& isGBC) {
+			SBVK = data & 0x07;
+			if (SBVK == 0) SBVK = 1;
+			return;
+		}
+		if (address == 0xFF51 && isGBC) {
+			if (hdmaActive)return;
+			HDMA1 = data;
+			return;
+		}
+		if (address == 0xFF52 && isGBC) {
+			if (hdmaActive)return;
+			HDMA2 = data & 0xF0;
+			return;
+		}
+		if (address == 0xFF53 && isGBC) {
+			if (hdmaActive)return;
+			HDMA3 = data& 0x1F;
+			return;
+		}
+		if (address == 0xFF54 && isGBC) {
+			if (hdmaActive)return;
+			HDMA4 = data & 0xF0;
+			return;
+		}
+		if (address == 0xFF55 && isGBC) {
+			if ((data & 0x80) == 0 && hdmaActive) {
+				hdmaActive = false;
+				hdmaLength = 0;
+				HDMA5 = 0xFF;
+				
+				return;
+			}
+			if (hdmaActive)return;
+			HDMA5 = data;
+			
+			hdmaActive = true;
+			hdmaMode = (data & 0x80) >> 7;
+			hdmaLength = ((data & 0x7F) +1);
+			dest = 0x8000 | (HDMA3 << 8) | HDMA4;   // HDMA3 already masked to 0x1F, HDMA4 to 0xF0
+			sourceBaseH = (HDMA1 << 8) | (HDMA2);
+			
+			if(hdmaMode == 0){
+				
+				
+				 
+				for (int i = hdmaLength; i > 0; i--){
+					for (int j = 0; j < 0x10; j++) {
+						uint8_t data = hdmaRead(sourceBaseH + j);
+						ppu->writeVRAM(dest + j, data);
+
+					}
+					dest += 0x10;
+					sourceBaseH += 0x10;
+				}
+				hdmaLength = 0;
+				hdmaActive = false;
+				HDMA5 = 0xFF;
+			}
+			else {
+				counting = 9;
+			}
+
+			return;
+		}
+		if (address >= 0xFF4F && address <= 0xFF6B && isGBC) {
+			if (address == 0xFF4F && hdmaActive) {
+				int hey = 0;
+			}
+			ppu->ppuWrite(address,data,iF);
+			return;
+		}
 		if (address >= 0xFF00 && address <= 0xFF7F && !dmaActive) {
 			
 
@@ -246,7 +393,40 @@ void GameBoy::tCycle(int num){
 }
 
 void GameBoy::init(){
+	a = 0x11;
+	b = 0x00;
+	c = 0x00;
+	d = 0xFF;
+	e = 0x56;
+	zeroFlag7 = (0xB0 & 0x80) != 0;
+	subtractionFlag6 = (0xB0 & 0x40) != 0;
+	halfCarryFlag5 = (0xB0 & 0x20) != 0;
+	carryFlag4 = (0xB0 & 0x10) != 0;
+	h = 0x00;
+	l = 0x0D;
+	BC = (b << 8) | c;
+	HL = (h << 8) | l;
+	DE = (d << 8) | e;
+	programCounter = 0x0100;
+	stackPointer = 0xFFFE;
+	cycleCount = 0;
+	//WRAM.resize(8);
+	for (int i = 0; i < 8; i++) {
+		std::vector<uint8_t> temp(4096, 0);
+		WRAM.push_back(temp);
 
+	}
+	for (int i = 0; i < 127; i++) {
+		hram[i] = 0;
+
+	}
+	for (int i = 0; i < 0x80; i++) {
+		ioRegisters[i] = 0;
+	}
+	Opcode = 0;
+
+	iF = 0xE1;
+	ie = 0;
 	
 }
 
@@ -3658,6 +3838,9 @@ void GameBoy::jumpInterruptions(uint8_t address){
 
 void GameBoy::handleInterruptions(){
 	if ((ime == 1) && ((ie & iF) != 0)) {
+		if (hdmaActive) {
+			int hey = 0;
+		}
 		if ((iF & 0x01) && (ie & 0x01)) {
 			//VBlank interruption
 			iF &= ~0x01;
@@ -3824,6 +4007,9 @@ void GameBoy::detectEdge(uint8_t before, uint8_t after){
 
 void GameBoy::mCycle(){
 	//ppu->checkEvents(isRunning, iF);
+	if (!ifHalt) {
+		hdma();
+	}
 	dma();
 	incState();
 	ppu->updatePPU(iF);
@@ -3831,6 +4017,39 @@ void GameBoy::mCycle(){
 }
 
 uint8_t GameBoy::readByte(uint16_t address){
+	if (isGBC) {
+		if (address >= 0x0000 && address <= 0x3FFF) {
+			uint8_t data = map->read(address);
+			return data;
+		}
+		if (address >= 0x4000 && address <= 0x7FFF) {
+			uint8_t data = map->read(address);
+			return data;
+		}
+		if (address >= 0x8000 && address <= 0x9FFF) {
+			return ppu->readVRAM(address);
+		}
+		if (address >= 0xA000 && address <= 0xBFFF) {
+			return map->read(address);
+		}
+		if (address >= 0xC000 && address <= 0xDFFF) {
+			if (address >= 0xC000 && address <= 0xCFFF && isGBC) {
+				return WRAM[0][address - 0xC000];
+
+			}
+			uint8_t bank = SBVK & 0x07;
+			if (bank == 0)bank = 1;
+			return WRAM[bank][address - 0xD000];
+		}
+		if (address >= 0xFE00 && address <= 0xFE9F) {
+			return ppu->readOAM(address);
+		}
+		if (address >= 0xFF80 && address <= 0xFFFE) {
+			return hram[address - 0xFF80];
+		}
+	
+		return 0xFF;
+	}
 	if (address >= 0x0000 && address <= 0x3FFF) {
 		uint8_t data = map->read(address);
 		return data;
@@ -3874,3 +4093,73 @@ void GameBoy::dma()
 		
 	}
 }
+
+void GameBoy::hdma(){
+	if (hdmaActive) {
+		
+		if (isHblank) {
+
+			
+			
+				for (int i = 0; i < 0x10; i++) {
+					uint8_t data = hdmaRead(sourceBaseH + i);
+					ppu->writeVRAM(dest + i, data);
+				}
+				sourceBaseH += 0x10;
+				dest += 0x10;
+				
+			
+			
+				hdmaLength--;
+				if (hdmaLength == 0) {
+					hdmaActive = false;
+					HDMA5 = 0xFF;
+				}
+				isHblank = false;
+				
+			
+		}
+	}
+}
+
+void GameBoy::gdma(){
+	if (!hdmaActive)return;
+	for (int j = 0; j < 0x10; j++) {
+		uint8_t data = hdmaRead(sourceBaseH + j);
+		ppu->writeVRAM(dest + j, data);
+
+	}
+	dest += 0x10;
+	sourceBaseH += 0x10;
+	hdmaLength--;
+	if (hdmaLength == 0) {
+		hdmaActive = false;
+	}
+}
+
+uint8_t GameBoy::hdmaRead(uint16_t address){
+	if (address >= 0x0000 && address <= 0x3FFF) {
+		uint8_t data = map->read(address);
+		return data;
+	}
+	if (address >= 0x4000 && address <= 0x7FFF) {
+		uint8_t data = map->read(address);
+		return data;
+	}
+	if (address >= 0xA000 && address <= 0xBFFF) {
+		return map->read(address);
+	}
+	if (address >= 0xC000 && address <= 0xDFFF) {
+		if (address >= 0xC000 && address <= 0xCFFF && isGBC) {
+			return WRAM[0][address - 0xC000];
+
+		}
+		uint8_t bank = SBVK & 0x07;
+		if (bank == 0)bank = 1;
+		return WRAM[bank][address - 0xD000];
+	}
+
+	return 0xFF;
+}
+
+

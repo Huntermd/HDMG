@@ -12,7 +12,21 @@ const uint32_t gbPalette[4] = {
 	0x000000FF
 	
 };
+typedef struct color_T {
+	uint32_t palette[32];
+	uint32_t getColor(uint8_t c);
+	uint8_t ram[64];
+	uint8_t autoIncrement = 0;
+	uint8_t address = 0;
+	uint8_t read();
+	uint8_t readByte();
+	const uint8_t a = 255;
+	int paletteSize = 0;
+	void write(uint8_t c);
+	void updateVariables(uint8_t d);
+	void loadColor();
 
+}CRAM;
 /*
 When handling backGround pixels we will only need the color and the other will be set to 0
 and isObj will be set to false
@@ -41,7 +55,7 @@ typedef struct pFIFO {
 	inline void clear();
 	void Override(Pixel pixel);
 	void loadTransparentPixels();
-	void handlePixelLoad(Pixel pixel, int index);
+	void handlePixelLoad(Pixel pixel, int index,bool gbc);
 	inline uint8_t peek(int index);
 	void mixing(Pixel pixel);
 
@@ -75,16 +89,25 @@ public:
 	uint8_t joypadSelect = 0x30;
 	 void loadRun(bool* r);
 	bool* run;
-	
+	bool* hBlank;
+	void loadBlank(bool* b);
+	int numberTest = 0;
+
 	void keyUp(SDL_Event& e);
 	void keyDown(SDL_Event& e);
 	void loadDMA(bool* d);
 	bool* dmaActive;
+	bool* isGBC;
+	void loadGBC(bool* c);
 	
 	
 	bool objectOn = false;
 	uint8_t vRam[8192];
+	CRAM bgCram;
+	CRAM objCram;
+	std::vector<std::vector<uint8_t>> VRAM;
 	uint32_t frameBuffer[160 * 144];
+	
 	uint8_t STAT = 0x84;
 	uint8_t LY =0;
 	uint8_t LCDC = 0x91;
@@ -172,7 +195,7 @@ public:
 	void freeSdl();
 	inline uint8_t ppuVramRead(uint16_t address);
 	
-	
+	uint32_t getColors(Pixel c);
 	uint8_t dma = 0xFF;
 	
 	int delayCycle = 3;
@@ -187,11 +210,35 @@ public:
 	
 	
 	
-	
+	int vramBankNum = 0;
 	void setFps();
 	int currentFPS = 0;
 	Uint32 fpsTimer;
 	int pos = 0;
+	uint8_t HDMA1= 0xFF;
+	uint8_t HDMA2 = 0xFF;
+	uint8_t HDMA3 = 0xFF;
+	uint8_t HDMA4 = 0xFF;
+	uint8_t HDMA5 = 0xFF;
+	uint8_t VBK = 0xFE;
+	uint8_t KEY0;
+	uint8_t KEY1;
+	uint8_t RP;
+	uint8_t OPRI;
+	uint8_t BCPS;
+	uint8_t BCPD;
+	uint8_t OCPS;
+	uint8_t OCPD;
+	void dmgInit();
+	void gbcInit();
+
+	uint8_t bgPriority;
+	uint8_t bgYFlip;
+	uint8_t bgXFlip;
+	uint8_t bgBank;
+	uint8_t bgCPalette;
+	uint8_t objBank;
+
 };
 
 inline void updateDisplay(uint32_t * frameBuffer);

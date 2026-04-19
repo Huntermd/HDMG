@@ -6,7 +6,7 @@ uint8_t Cartridge::getMBC(){
 }
 Cartridge::~Cartridge(){
 	if (ramBankNumber > 0) {
-		saveRam();
+		//saveRam();
 	}
 }
 
@@ -66,7 +66,7 @@ void Cartridge::loadRom(const char* filePath){
 	
 	
 		if (ramBankNumber> 0) {
-			loadRam(fileN.c_str());
+			//loadRam(fileN.c_str());
 			
 		}
 	
@@ -171,8 +171,9 @@ void Cartridge::getRamRomsize(){
 
 void Cartridge::getRomBankSize(std::vector<unsigned char> file){
 	romSize = static_cast<int>(file[0x0148]);
-	int MBC = static_cast<int>(file[0x0147]);
-
+	int GBC = static_cast<int>(file[0x0143]);
+	if (GBC == 0x80 || GBC == 0xC0) isGBC = true;
+	
 	//for (uint16_t pc = 0x460B; pc <=0x460D; pc++){
 	//	std::cout << std::hex << static_cast<int>(file[pc]) << "\n";
 	//}

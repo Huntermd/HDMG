@@ -1,21 +1,13 @@
-*.gb
-*.bin
 
-*.png
-*.jpg
-CPU.h
-CPU.cpp
+*.gb
+*.gbc
+*.txt
 *.sav
-NMBC.cpp
-NMBC.h
-MBC1.cpp
-MBC1.h
-MBC2.cpp
-MBC2.h
-MBC3.cpp
-MBC3.h
-jsonTest.cpp
-jsonTest.h
-Bus.h
-Bus.cpp
-*.json
+*.bin
+*.png
+build/
+  out/
+  *.sav
+  x64/
+  .vs/
+  *.vcxproj.user

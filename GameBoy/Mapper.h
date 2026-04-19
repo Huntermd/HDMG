@@ -8,11 +8,11 @@ public:
 	bool* halt;
 	 ~Mapper();
 	 Mapper(std::string f);
-	inline void write(uint16_t address, uint8_t data);
+	void write(uint16_t address, uint8_t data);
 	void loadHalt(bool* h);
 
-	inline uint8_t read(uint16_t address);
-	
+	 uint8_t read(uint16_t address);
+	bool getGBC();
 	
 	
 	

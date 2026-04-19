@@ -14,13 +14,13 @@ Mapper::Mapper(std::string f){
 	
 }
 
-void Mapper::write(uint16_t address, uint8_t data){
+void Mapper::write(uint16_t address, uint8_t data) {
 	if (mbcType == 0x00) { nmbcWrite(address, data); return; }
 	if (mbcType >= 0x01 && mbcType <= 0x03) { mbc1Write(address, data); return; }
 	//if (mbcType >= 0x01 && mbcType <= 0x03)return mbc1Read(address);
 	if (mbcType >= 0x0F && mbcType <= 0x13) { mbc3Write(address, data); return; }
 	if (mbcType >= 0x19 && mbcType <= 0x1E) { mbc5Write(address, data); return; }
-	
+
 }
 
 void Mapper::loadHalt(bool* h){
@@ -39,6 +39,10 @@ uint8_t Mapper::read(uint16_t address){
 	
 	
 	
+}
+
+bool Mapper::getGBC(){
+	return cart.isGBC;
 }
 
 

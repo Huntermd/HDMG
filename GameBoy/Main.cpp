@@ -9,13 +9,19 @@
 
 
 int main(int argc, char* argv[]) {
-	std::string fileName;
-	fileName = argv[1];
-		
-		if (fileName.substr(fileName.size() - 3) != ".gb") {
-			std::cout << "Error Second Argument is not a .gb file";
-			exit(1);
-		}
+	if (argc < 2) {
+		std::cout << "Usage: " << argv[0] << " <rom.gb|rom.gbc>\n";
+		exit(1);
+	}
+
+	std::string fileName = argv[1];
+	auto dot = fileName.rfind('.');
+
+	if (dot == std::string::npos ||
+		(fileName.substr(dot) != ".gb" && fileName.substr(dot) != ".gbc")) {
+		std::cout << "Error: not a .gb or .gbc file\n";
+		exit(1);
+	}
 		PPU ppu = PPU();
 		if (ppu.initSdl() == -1) {
 			exit(1);

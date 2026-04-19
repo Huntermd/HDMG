@@ -24,6 +24,7 @@ public:
 	
 	
 private:
+	bool isGBC = false;
 	bool ifHalt = false;
 	
 	inline void getOpcode();	
@@ -33,7 +34,10 @@ private:
 	void init();
 	void cpuInit();
 	uint8_t wram[8192];
+	uint8_t SBVK = 0xF8;
 	uint8_t hram[127];
+	std::vector<std::vector<uint8_t>> WRAM;
+	int wramBankNumber = 0;
 	uint16_t AF;
 	uint8_t a;
 	//Lower 8 bits of AF
@@ -132,5 +136,28 @@ private:
 	uint8_t readByte(uint16_t address);
 	inline void dma();
 	uint8_t byte = 0x00;
-
+	//HDMA
+	uint8_t HDMA1;
+	uint8_t HDMA2;
+	uint8_t HDMA3;
+	uint8_t HDMA4;
+	uint8_t HDMA5;
+	bool hdmaActive = false;
+	bool hdmaEnabled = false;
+	uint16_t sourceBaseH = 0x0000;
+	uint8_t hdmaIndex = 0xFFFF;
+	uint8_t hdmaMode = 1;
+	uint16_t hdmaLength = 0x7F;
+	void hdma();
+	void gdma();
+	bool isHblank = true;
+	uint16_t dest = 0;
+	uint16_t dest_index = 0;
+	uint16_t sourceIndex = 0;
+	uint8_t lastLy = 0;
+	uint8_t hdmaRead(uint16_t address);
+	uint8_t tillNextByte = 0;
+	uint8_t counting = 0;
+	bool hdmaCanceled = false;
+	bool notifyHBlank = false;
 };
