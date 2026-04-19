@@ -1,34 +1,50 @@
 # HDMG
-A gb emulator written in C++ with SDL and CLI support.
+A Game Boy / Game Boy Color emulator written in C++ with SDL2.
 
-## Features
-- Supports DMG games
-- Has basic no MBC / MBC1/ MBC3/ MBC5 support(A good link for more information) https://gbhwdb.gekkio.fi/cartridges/gb.html
-- CLI support
-
-## Build Instructions
-
-### Prequisties
-- CMake
-- C++17 or later compiler
+## Prerequisites
+- CMake 3.16+
+- A C++20 compiler (GCC 10+, Clang 12+, or MSVC 2019+)
 - SDL2
-### Steps
+
+## Build
+
+### Linux
 ```bash
-    git clone https://github.com/Huntermd/HDMG.git
-    cd HDMG
-    cmake -B build
-    cmake --build build
+sudo apt install cmake ninja-build libsdl2-dev   # or your distro's equivalent
+git clone https://github.com/Huntermd/HDMG.git
+cd HDMG
+cmake --preset linux-release
+cmake --build build/linux-release
 ```
-## How to use
+
+### Windows (vcpkg)
+```bat
+git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+C:\vcpkg\bootstrap-vcpkg.bat
+C:\vcpkg\vcpkg install sdl2
+setx VCPKG_ROOT C:\vcpkg
+
+git clone https://github.com/Huntermd/HDMG.git
+cd HDMG
+cmake --preset windows-release
+cmake --build build\windows-release
+```
+
+### macOS
 ```bash
-    /HDMG path/to/game.gb
+brew install cmake ninja sdl2
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
 ```
+
+## Usage
+```bash
+./HDMG path/to/rom.gb     # or .gbc
+```
+
 ## Controls
-- Arrow Keys = D-pad
-- A
-- B
-- S = Start
-- D = Select
-## Future Features
-- GBC support
-- APU support
+- Arrow keys — D-pad
+- A — A
+- B — B
+- S — Start
+- D — Select
